@@ -18,9 +18,9 @@ def main(argv):
 
     try:
         directory = './Boards/' + argv[1]
-        board = pd.read_csv(directory, sep=',').values
-    except:
-        print("Error: No such file or directory: " + directory)
+        board = pd.read_csv(directory, sep=',', header=None).replace('B', 0).values.astype(int)
+    except Exception as e:
+        print(e)
         return
 
     algorithm = argv[0]
