@@ -9,6 +9,16 @@ class Board:
     def __init__(self, board):
         self.board = board
 
+    # allows Board to be treated as a normal 2d array
+    def __getitem__(self, item):
+        return self.board[item]
+
+    def __iter__(self):
+        return self.board.__iter__()
+
+    def __len__(self):
+        return len(self.board)
+
     def neighbors(self):
         neighbors = []
         for row in range(len(self.board)):
