@@ -10,10 +10,7 @@ class Board:
 
     @cache
     def heuristic(self, sliding, weighted):
-        return 0;
-
-    def neighbors(self):
-        return self
+        return 0
 
     @cache
     def goal_state(self, board):
