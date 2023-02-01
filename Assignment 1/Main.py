@@ -1,5 +1,7 @@
 import pandas as pd
 import sys
+
+import Board
 import HillClimbing
 import AStar
 
