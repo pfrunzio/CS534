@@ -28,6 +28,7 @@ def main(argv):
         try:
             directory = './Boards/' + argv[1]
             board = pd.read_csv(directory, sep=',', header=None).replace('B', 0).values.astype(int)
+            board = Board.Board(board)
         except Exception as e:
             print(e, command_format)
             continue
