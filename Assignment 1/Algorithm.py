@@ -1,15 +1,30 @@
 from abc import abstractmethod, ABC
 from functools import cache
+from enum import Enum
 from copy import copy, deepcopy
+from collections import namedtuple
 
 HEURISTIC_TELEPORT = "teleport"
 HEURISTIC_SLIDE = "sliding"
 
 
+class Direction(Enum):
+    UP = (-1, 0)
+    DOWN = (1, 0)
+    LEFT = (0, -1)
+    RIGHT = (0, 1)
+
+
+# return type of Algorithm.neighbors(board)
+Neighbor = namedtuple('neighbor', 'board value direction')
+
+
 class Algorithm(ABC):
 
-    def __init__(self, board):
+    def __init__(self, board, heuristic, weighted):
         self.board = board
+        self.heuristic_type = heuristic
+        self.weighted = weighted
         self.goal_state_front_blanks, self.goal_state_back_blanks = self.goal_state(self.board)
 
     # Driver method for algorithms
@@ -40,15 +55,15 @@ class Algorithm(ABC):
         return front_dict, back_dict
 
     # Heuristic functions:
-    def calculate_heuristic(self, board, heuristic, weighted):
-        if heuristic == HEURISTIC_TELEPORT:
-            return self._calculate_teleport_heuristic(board, weighted)
-        elif heuristic == HEURISTIC_SLIDE:
-            return self._calculate_slide_heuristic(board, weighted)
+    def calculate_heuristic(self, board):
+        if self.heuristic_type == HEURISTIC_TELEPORT:
+            return self._calculate_teleport_heuristic(board)
+        elif self.heuristic_type == HEURISTIC_SLIDE:
+            return self._calculate_slide_heuristic(board)
         else:
-            return self._calculate_slide_heuristic(board, weighted)
+            return self._calculate_slide_heuristic(board)
 
-    def _calculate_teleport_heuristic(self, board, weighted):
+    def _calculate_teleport_heuristic(self, board):
         front_heuristic = 0
         back_heuristic = 0
         for x in range(len(board)):
@@ -59,12 +74,12 @@ class Algorithm(ABC):
                 front_blank_coordinates = self.goal_state_front_blanks[current]
                 back_blank_coordinates = self.goal_state_back_blanks[current]
                 if (x, y) != front_blank_coordinates:
-                    front_heuristic += 1 * (current if weighted else 1)
+                    front_heuristic += 1 * (current if self.weighted else 1)
                 if (x, y) != back_blank_coordinates:
-                    back_heuristic += 1 * (current if weighted else 1)
+                    back_heuristic += 1 * (current if self.weighted else 1)
         return front_heuristic, back_heuristic
 
-    def _calculate_slide_heuristic(self, board, weighted):
+    def _calculate_slide_heuristic(self, board):
         front_heuristic = 0
         back_heuristic = 0
         for x in range(len(board)):
@@ -72,8 +87,8 @@ class Algorithm(ABC):
                 current = board[x][y]
                 if current == 0:
                     continue
-                front_heuristic += self._manhattan_distance_to_goal((x, y), current, True) * (current if weighted else 1)
-                back_heuristic += self._manhattan_distance_to_goal((x, y), current, False) * (current if weighted else 1)
+                front_heuristic += self._manhattan_distance_to_goal((x, y), current, True) * (current if self.weighted else 1)
+                back_heuristic += self._manhattan_distance_to_goal((x, y), current, False) * (current if self.weighted else 1)
         return front_heuristic, back_heuristic
 
     @cache
@@ -92,11 +107,11 @@ class Algorithm(ABC):
 
     def _neighbor(self, board, row, col):
         neighbors = []
-        map = [(1, 0), (0, 1), (-1, 0), (0, -1)]
-        for r, c in map:
+        directions = [(1, 0), (0, 1), (-1, 0), (0, -1)]
+        for r, c in directions:
             if self._is_legal(row + r, col + c) and board[row + r][col + c] != 0:
-                new_board = deepcopy(board)
-                neighbors.append(self._swap(new_board, row + r, col + c, row, col))
+                new_board = self._swap(deepcopy(board), row + r, col + c, row, col)
+                neighbors.append(Neighbor(new_board, new_board[row][col], Direction((-r, -c))))
         return neighbors
 
     def _swap(self, board, row1, col1, row2, col2):
