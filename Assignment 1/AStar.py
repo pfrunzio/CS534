@@ -1,10 +1,6 @@
 from Algorithm import Algorithm
 
 
-HEURISTIC_TELEPORT = "teleport"
-HEURISTIC_SLIDE = "sliding"
-
-
 class AStar(Algorithm):
 
     def __init__(self, board, heuristic, weight):

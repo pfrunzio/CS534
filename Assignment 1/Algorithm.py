@@ -1,7 +1,9 @@
 from abc import abstractmethod, ABC
 from functools import cache
+from copy import copy, deepcopy
 
-import AStar
+HEURISTIC_TELEPORT = "teleport"
+HEURISTIC_SLIDE = "sliding"
 
 
 class Algorithm(ABC):
@@ -15,14 +17,6 @@ class Algorithm(ABC):
     def start(self):
         pass
 
-
-    def calculate_heuristic(self, heuristic, weighted):
-        if heuristic == AStar.HEURISTIC_TELEPORT:
-            return self.calculate_teleport_heuristic(self.board, weighted)
-        elif heuristic == AStar.HEURISTIC_SLIDE:
-            return self.calculate_slide_heuristic(self.board, weighted)
-        else:
-            return self.calculate_slide_heuristic(self.board, weighted)
 
     # to be run once one init, and never again
     def goal_state(self, board):
@@ -45,7 +39,16 @@ class Algorithm(ABC):
 
         return front_dict, back_dict
 
-    def calculate_teleport_heuristic(self, board, weighted):
+    # Heuristic functions:
+    def calculate_heuristic(self, board, heuristic, weighted):
+        if heuristic == HEURISTIC_TELEPORT:
+            return self._calculate_teleport_heuristic(board, weighted)
+        elif heuristic == HEURISTIC_SLIDE:
+            return self._calculate_slide_heuristic(board, weighted)
+        else:
+            return self._calculate_slide_heuristic(board, weighted)
+
+    def _calculate_teleport_heuristic(self, board, weighted):
         front_heuristic = 0
         back_heuristic = 0
         for x in range(len(board)):
@@ -61,7 +64,7 @@ class Algorithm(ABC):
                     back_heuristic += 1 * (current if weighted else 1)
         return front_heuristic, back_heuristic
 
-    def calculate_slide_heuristic(self, board, weighted):
+    def _calculate_slide_heuristic(self, board, weighted):
         front_heuristic = 0
         back_heuristic = 0
         for x in range(len(board)):
@@ -69,11 +72,39 @@ class Algorithm(ABC):
                 current = board[x][y]
                 if current == 0:
                     continue
-                front_heuristic += self.manhattan_distance_to_goal((x, y), current, True) * (current if weighted else 1)
-                back_heuristic += self.manhattan_distance_to_goal((x, y), current, False) * (current if weighted else 1)
+                front_heuristic += self._manhattan_distance_to_goal((x, y), current, True) * (current if weighted else 1)
+                back_heuristic += self._manhattan_distance_to_goal((x, y), current, False) * (current if weighted else 1)
         return front_heuristic, back_heuristic
 
     @cache
-    def manhattan_distance_to_goal(self, location, value, front):
+    def _manhattan_distance_to_goal(self, location, value, front):
         location_2 = self.goal_state_front_blanks[value] if front else self.goal_state_back_blanks[value]
         return abs(location[0]-location_2[0]) + abs(location[1]-location_2[1])
+
+    # Neighbor functions:
+    def neighbors(self, board):
+        neighbors = []
+        for row in range(len(board)):
+            for col in range(len(board)):
+                if board[row][col] == 0:
+                    neighbors = neighbors + self._neighbor(board, row, col)
+        return neighbors
+
+    def _neighbor(self, board, row, col):
+        neighbors = []
+        map = [(1, 0), (0, 1), (-1, 0), (0, -1)]
+        for r, c in map:
+            if self._is_legal(row + r, col + c) and board[row + r][col + c] != 0:
+                new_board = deepcopy(board)
+                neighbors.append(self._swap(new_board, row + r, col + c, row, col))
+        return neighbors
+
+    def _swap(self, board, row1, col1, row2, col2):
+        store = board[row1][col1]
+        board[row1][col1] = board[row2][col2]
+        board[row2][col2] = store
+        return board
+
+    def _is_legal(self, row, col):
+        return row >= 0 and col >= 0 and row < len(self.board) and col < len(self.board)
+

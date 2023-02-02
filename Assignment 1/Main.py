@@ -1,8 +1,8 @@
 import pandas as pd
 import sys
 
-import Board
 import HillClimbing
+import Algorithm
 import AStar
 
 COMMAND_ARGUMENT_ASTAR = "npuzzle"
@@ -28,7 +28,6 @@ def main(argv):
         try:
             directory = './Boards/' + argv[1]
             board = pd.read_csv(directory, sep=',', header=None).replace('B', 0).values.astype(int)
-            board = Board.Board(board)
         except Exception as e:
             print(e, command_format)
             continue
@@ -60,7 +59,7 @@ def main(argv):
 
             print(heuristic)
 
-            if not heuristic.lower() in [AStar.HEURISTIC_TELEPORT, AStar.HEURISTIC_SLIDE]:
+            if not heuristic.lower() in [Algorithm.HEURISTIC_TELEPORT, Algorithm.HEURISTIC_SLIDE]:
                 print("Unknown heuristic for command argument 2", command_format)
                 continue
 
