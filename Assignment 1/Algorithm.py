@@ -1,5 +1,5 @@
 from abc import abstractmethod, ABC
-from functools import cache
+# from functools import cache
 from enum import Enum
 from copy import copy, deepcopy
 from collections import namedtuple
@@ -91,7 +91,7 @@ class Algorithm(ABC):
                 back_heuristic += self._manhattan_distance_to_goal((x, y), current, False) * (current if self.weighted else 1)
         return front_heuristic, back_heuristic
 
-    @cache
+    # @cache
     def _manhattan_distance_to_goal(self, location, value, front):
         location_2 = self.goal_state_front_blanks[value] if front else self.goal_state_back_blanks[value]
         return abs(location[0]-location_2[0]) + abs(location[1]-location_2[1])
