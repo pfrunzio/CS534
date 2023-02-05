@@ -96,30 +96,5 @@ class Algorithm(ABC):
         location_2 = self.goal_state_front_blanks[value] if front else self.goal_state_back_blanks[value]
         return abs(location[0]-location_2[0]) + abs(location[1]-location_2[1])
 
-    # Neighbor functions:
-    def neighbors(self, board):
-        neighbors = []
-        for row in range(len(board)):
-            for col in range(len(board)):
-                if board[row][col] == 0:
-                    neighbors = neighbors + self._neighbor(board, row, col)
-        return neighbors
 
-    def _neighbor(self, board, row, col):
-        neighbors = []
-        directions = [(1, 0), (0, 1), (-1, 0), (0, -1)]
-        for r, c in directions:
-            if self._is_legal(row + r, col + c) and board[row + r][col + c] != 0:
-                new_board = self._swap(deepcopy(board), row + r, col + c, row, col)
-                neighbors.append(Neighbor(new_board, new_board[row][col], Direction((-r, -c))))
-        return neighbors
-
-    def _swap(self, board, row1, col1, row2, col2):
-        store = board[row1][col1]
-        board[row1][col1] = board[row2][col2]
-        board[row2][col2] = store
-        return board
-
-    def _is_legal(self, row, col):
-        return row >= 0 and col >= 0 and row < len(self.board) and col < len(self.board)
 
