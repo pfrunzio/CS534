@@ -13,7 +13,8 @@ class AStar(Algorithm):
         print(f'Performing A* search with {self.heuristic_type} heuristic {"with" if self.weighted else "without"} weight')
         print("Initial Board:")
         print(self.board)
-    
+
+    def search(self):
         fringe = PriorityQueue()
         fringe.put(self.board, 0)
         came_from = dict()
