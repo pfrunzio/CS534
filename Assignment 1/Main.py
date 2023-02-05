@@ -58,8 +58,6 @@ def main(argv):
             elif bool == "false":
                 weight = False
 
-            print(heuristic)
-
             if not heuristic.lower() in [Algorithm.HEURISTIC_TELEPORT, Algorithm.HEURISTIC_SLIDE]:
                 print("Unknown heuristic for command argument 2", command_format)
                 continue
