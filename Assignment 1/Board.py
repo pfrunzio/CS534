@@ -46,7 +46,6 @@ class Board:
                 string += str(num)
         return hash(string)
 
-
     def __eq__(self, other):
         if type(self) != type(other):
             return False
