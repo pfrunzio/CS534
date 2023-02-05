@@ -4,6 +4,7 @@ import sys
 import HillClimbing
 import Algorithm
 import AStar
+from Board import Board
 
 COMMAND_ARGUMENT_ASTAR = "npuzzle"
 COMMAND_ARGUMENT_HILLCLIMB = "greedy"
@@ -27,7 +28,7 @@ def main(argv):
 
         try:
             directory = './Boards/' + argv[1]
-            board = pd.read_csv(directory, sep=',', header=None).replace('B', 0).values.astype(int)
+            board = Board(pd.read_csv(directory, sep=',', header=None).replace('B', 0).values.astype(int))
         except Exception as e:
             print(e, command_format)
             continue

@@ -43,3 +43,8 @@ class Board:
 
     def __len__(self):
         return len(self.board)
+
+    def __repr__(self):
+        return self.board
+    def __str__(self):
+        return str(self.board)
