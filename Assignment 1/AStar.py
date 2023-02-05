@@ -13,6 +13,7 @@ class AStar(Algorithm):
         print(f'Performing A* search with {self.heuristic_type} heuristic {"with" if self.weighted else "without"} weight')
         print("Initial Board:")
         print(self.board)
+        self.search()
 
     def search(self):
         fringe = PriorityQueue()
@@ -26,6 +27,7 @@ class AStar(Algorithm):
             current = fringe.get()
 
             if self.calculate_heuristic(self, current) == 0:
+                print(current)
                 break
             
             for next in self.neighbors(current):
