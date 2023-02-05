@@ -6,34 +6,51 @@ class AStar(Algorithm):
 
     def __init__(self, board, heuristic, weighted):
         super().__init__(board, heuristic, weighted)
+        self.nodes_expanded = 0
 
     def start(self):
         print(self.weighted)
         print(False)
         print(f'Performing A* search with {self.heuristic_type} heuristic {"with" if self.weighted else "without"} weight')
         print("Initial Board:")
-        print(self.board)
-        #self.search()
+        end = self.search()
+
+        print("\nPath:")
+        path = self._create_path_string(end)
+        print("\n".join(path))
+
+        print("\nCost: {}".format(end.cost))
+        print("Length: {}".format(len(path)))
+
+        print("Nodes Expanded: {}".format(self.nodes_expanded))
+        print("Estimated Branching Factor: {}".format(pow(self.nodes_expanded, 1 / len(path))))
+
+        print()
 
     def search(self):
+        print(self.board)
+
         fringe = PriorityQueue()
-        fringe.put(self.board, 0)
-        came_from = dict()
-        cost_so_far = dict()
-        came_from[self.board] = None
-        cost_so_far[self.board] = 0
+        fringe.put((self.calculate_heuristic(self.board), self.board))
 
         while not fringe.empty():
-            current = fringe.get()
+            current = fringe.get()[1]
+            self.nodes_expanded += 1
 
             if self.calculate_heuristic(current) == 0:
-                print(current)
-                break
-            
-            for next in self.neighbors(current):
-                new_cost = cost_so_far[current] + next[1:][0]
-                if next not in cost_so_far or new_cost < cost_so_far[next]:
-                    cost_so_far[next] = new_cost
-                    priority = new_cost + self.calculate_heuristic(next)
-                    fringe.put(next, priority)
-                    came_from[next] = current
+                return current
+
+            for board, value, direction in current.neighbors():
+                priority = board.cost + self.calculate_heuristic(board)
+                fringe.put((priority, board))
+
+    def _create_path_string(self, goal):
+        current = goal
+        moves = []
+
+        while current.previous is not None:
+            moves.append("{} {}".format(current.value, current.direction.name))
+            current = current.previous
+
+        moves.reverse()
+        return moves

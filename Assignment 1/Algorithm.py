@@ -57,11 +57,11 @@ class Algorithm(ABC):
     # Heuristic functions:
     def calculate_heuristic(self, board):
         if self.heuristic_type == HEURISTIC_TELEPORT:
-            return self._calculate_teleport_heuristic(board)
+            return min(self._calculate_teleport_heuristic(board))
         elif self.heuristic_type == HEURISTIC_SLIDE:
-            return self._calculate_slide_heuristic(board)
+            return min(self._calculate_slide_heuristic(board))
         else:
-            return self._calculate_slide_heuristic(board)
+            return min(self._calculate_slide_heuristic(board))
 
     def _calculate_teleport_heuristic(self, board):
         front_heuristic = 0
