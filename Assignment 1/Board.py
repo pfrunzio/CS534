@@ -19,7 +19,7 @@ class Board:
         for r, c in directions:
             if self._is_legal(row + r, col + c) and self.board[row + r][col + c] != 0:
                 new_board = self._swap(deepcopy(self.board), row + r, col + c, row, col)
-                neighbors.append(Neighbor(new_board, new_board[row][col], Direction((-r, -c))))
+                neighbors.append(Neighbor(Board(new_board), new_board[row][col], Direction((-r, -c))))
         return neighbors
 
     def _swap(self, board, row1, col1, row2, col2):
