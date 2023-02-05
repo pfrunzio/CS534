@@ -30,7 +30,6 @@ def main(argv):
         # try:
         directory = './Boards/' + argv[1]
         board = pd.read_csv(directory, sep=',', header=None).replace('B', 0).values.astype(int)
-        print(HillClimbing.HillClimbing(board, 12).random_restart(True))
 
         # except Exception as e:
         #     print(e, command_format)
