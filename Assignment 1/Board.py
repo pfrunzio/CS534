@@ -31,6 +31,9 @@ class Board:
     def _is_legal(self, row, col):
         return row >= 0 and col >= 0 and row < len(self.board) and col < len(self.board)
 
+    def __hash__(self):
+        return hash(map(tuple, self.board))
+
     def __init__(self, board):
         self.board = board
 
