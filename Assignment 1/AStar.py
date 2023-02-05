@@ -26,14 +26,14 @@ class AStar(Algorithm):
         while not fringe.empty():
             current = fringe.get()
 
-            if self.calculate_heuristic(self, current) == 0:
+            if self.calculate_heuristic(current) == 0:
                 print(current)
                 break
             
             for next in self.neighbors(current):
-                new_cost = cost_so_far[current] + self.cost(current, next)
+                new_cost = cost_so_far[current] + next[1:][0]
                 if next not in cost_so_far or new_cost < cost_so_far[next]:
                     cost_so_far[next] = new_cost
-                    priority = new_cost + Algorithm.calculate_heuristic(self, next)
+                    priority = new_cost + self.calculate_heuristic(next)
                     fringe.put(next, priority)
                     came_from[next] = current
