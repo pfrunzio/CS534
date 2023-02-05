@@ -32,17 +32,20 @@ class AStar(Algorithm):
 
         fringe = PriorityQueue()
         fringe.put((self.calculate_heuristic(self.board), self.board))
+        visited = set()
 
         while not fringe.empty():
             current = fringe.get()[1]
+            visited.add(current)
             self.nodes_expanded += 1
 
             if self.calculate_heuristic(current) == 0:
                 return current
 
             for board, value, direction in current.neighbors():
-                priority = board.cost + self.calculate_heuristic(board)
-                fringe.put((priority, board))
+                if board not in visited:
+                    priority = board.cost + self.calculate_heuristic(board)
+                    fringe.put((priority, board))
 
     def _create_path_string(self, goal):
         current = goal

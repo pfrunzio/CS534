@@ -40,18 +40,23 @@ class Board:
         return row >= 0 and col >= 0 and row < len(self.board) and col < len(self.board)
 
     def __hash__(self):
-        return 1
+        string = ""
+        for row in self.board:
+            for num in row:
+                string += str(num)
+        return hash(string)
+
 
     def __eq__(self, other):
         if type(self) != type(other):
             return False
-        np.array_equal(self.board, other.board)
+        return (self.board == other.board).all()
 
     def __lt__(self, other):
         np.less(self.board, other.board)
 
-    def __le__(self, other):
-        return np.less_equal(self.board, other.board)
+    #def __le__(self, other):
+    #    return np.less_equal(self.board, other.board)
 
     # allows Board to be treated as a normal 2d array
     def __getitem__(self, item):
@@ -63,7 +68,7 @@ class Board:
     def __len__(self):
         return len(self.board)
 
-    # def __repr__(self):
+    #def __repr__(self):
     #    return self.board
 
     def __str__(self):
