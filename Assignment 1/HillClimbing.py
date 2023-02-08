@@ -16,7 +16,7 @@ TEMP_MODIFIER_BASE = 5
 class HillClimbing(Algorithm):
 
     def __init__(self, board, seconds):
-        super().__init__(board, HEURISTIC_SLIDE, False)
+        super().__init__(board, HEURISTIC_SLIDE, True)
         self.seconds = seconds
 
     def start(self):
