@@ -6,6 +6,7 @@ from collections import namedtuple
 
 HEURISTIC_TELEPORT = "teleporting"
 HEURISTIC_SLIDE = "sliding"
+HEURISTIC_GREEDY = "greedy"
 
 
 class Direction(Enum):

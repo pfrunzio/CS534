@@ -45,7 +45,7 @@ def main(argv):
             except:
                 print("Exception: Invalid seconds for command argument 3", command_format)
                 continue
-            driver = HillClimbing.HillClimbing(board, seconds)
+            driver = HillClimbing.HillClimbing(board, True, seconds)
 
         elif algorithm == COMMAND_ARGUMENT_ASTAR:
 
@@ -59,7 +59,7 @@ def main(argv):
             elif bool == "false":
                 weight = False
 
-            if not heuristic.lower() in [Algorithm.HEURISTIC_TELEPORT, Algorithm.HEURISTIC_SLIDE]:
+            if not heuristic.lower() in [Algorithm.HEURISTIC_TELEPORT, Algorithm.HEURISTIC_SLIDE, Algorithm.HEURISTIC_GREEDY]:
                 print("Unknown heuristic for command argument 2", command_format)
                 continue
 

@@ -1,5 +1,6 @@
 from Algorithm import Algorithm
 from queue import PriorityQueue
+from HillClimbing import HillClimbing
 import time
 
 
@@ -30,7 +31,12 @@ class AStar(Algorithm):
             current = fringe.get()[1]
             self.nodes_expanded += 1
 
-            if self.calculate_heuristic(current) == 0:
+            heuristic = \
+                self.calculate_heuristic(current) \
+                if (self.heuristic_type != "greedy") \
+                else self._calculate_greedy_heuristic(current)
+
+            if heuristic == 0:
                 self.elapsed_time = time.time() - start_time
                 return current
 
@@ -65,3 +71,8 @@ class AStar(Algorithm):
         print("Elapsed Time: {}".format(self.elapsed_time))
 
         print()
+
+    def _calculate_greedy_heuristic(self, board):
+        greedy = HillClimbing(board, self.weighted, 0)
+        local_min, current_cost, _, _ = greedy.greedy_hill_climbing(False, board)
+        return current_cost + self.calculate_heuristic(local_min)

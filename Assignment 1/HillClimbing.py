@@ -15,8 +15,8 @@ TEMP_MODIFIER_BASE = 5
 
 class HillClimbing(Algorithm):
 
-    def __init__(self, board, seconds):
-        super().__init__(board, HEURISTIC_SLIDE, False)
+    def __init__(self, board, weighted, seconds):
+        super().__init__(board, HEURISTIC_SLIDE, weighted)
         self.seconds = seconds
 
     def start(self):
@@ -85,13 +85,14 @@ class HillClimbing(Algorithm):
 
             current_cost = self.calculate_heuristic(new_board.board)
 
-            best_neighbor, best_neighbor_score, neighbor_count = self._get_best_neighbor(enable_sideways, new_board)
-            best_neighbor_board = best_neighbor.board.board
+            best_neighbor, neighbor_count = self._get_best_neighbor(enable_sideways, new_board)
+            best_neighbor_board = best_neighbor[0].board
+            best_neighbor_score = self.calculate_heuristic(best_neighbor_board)
             total_neighbor_count += 1
 
             if best_neighbor_score < current_cost:
                 new_board = best_neighbor_board
-                move_list.append(Move(best_neighbor.value, best_neighbor.direction))
+                move_list.append(Move(best_neighbor_board.value, best_neighbor_board.direction))
                 if best_neighbor_score == 0:
                     local_min = True
             elif best_neighbor_score == current_cost and sideways_move_count > MAX_SIDEWAYS_MOVES:
@@ -112,7 +113,7 @@ class HillClimbing(Algorithm):
 
         current_board_cost = self.calculate_heuristic(current_board)
 
-        neighbors = current_board.neighbors
+        neighbors = current_board.neighbors()
 
         sideways_neighbors = []
         tied_neighbors = []
@@ -135,7 +136,7 @@ class HillClimbing(Algorithm):
                 sideways_neighbors.append((neighbor, neighbor_score))
 
         if enable_sideways and best_neighbor_score > current_board_cost and len(sideways_neighbors) > 0:
-            return random.choice(sideways_neighbors)
+            return random.choice(sideways_neighbors), neighbor_count
 
         return random.choice(tied_neighbors), neighbor_count
 
