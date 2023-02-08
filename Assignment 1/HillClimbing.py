@@ -61,7 +61,6 @@ class HillClimbing(Algorithm):
                 best_cost = self.calculate_heuristic(self.board.board)
                 count = 0
                 moves = []
-                total_neighbor_count = 0
 
         if solution is None:
             return best_board.board, best_board.cost, total_neighbor_count, moves

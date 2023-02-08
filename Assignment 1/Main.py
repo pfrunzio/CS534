@@ -12,7 +12,10 @@ COMMAND_ARGUMENT_HILLCLIMB = "greedy"
 
 def main(argv):
 
-    command_format = "\nformat: [npuzzle/greed] [board file] [sliding/teleporting] [true/false]"
+    command_format = "\ncommands: [npuzzle] [board file] [sliding/teleporting/greedy] [true/false]" + ""\
+                     "\n          [greedy] [board file] [time]\n"
+
+    print(command_format)
 
     while True:
         argv = get_input()
