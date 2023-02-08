@@ -14,8 +14,6 @@ def main(argv):
 
     command_format = "\nformat: [npuzzle/greed] [board file] [sliding/teleporting] [true/false]"
 
-
-
     while True:
         argv = get_input()
 
@@ -30,7 +28,7 @@ def main(argv):
 
         # try:
         directory = './Boards/' + argv[1]
-        board = pd.read_csv(directory, sep=',', header=None).replace('B', 0).values.astype(int)
+        board = Board(pd.read_csv(directory, sep=',', header=None).replace('B', 0).values.astype(int))
 
         # except Exception as e:
         #     print(e, command_format)

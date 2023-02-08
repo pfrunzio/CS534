@@ -3,13 +3,12 @@ import random
 
 import matplotlib.pyplot as plt
 
-from Algorithm import Algorithm
+from Algorithm import Algorithm, Move
 from Algorithm import HEURISTIC_SLIDE
 import time
 
 MIN_BOARD_SIZE = 3
 MAX_SIDEWAYS_MOVES = 7
-MAX_GREEDY_ITERATIONS = 0
 INITIAL_TEMP_BASE = 4
 TEMP_MODIFIER_BASE = 5
 
@@ -23,75 +22,81 @@ class HillClimbing(Algorithm):
     def start(self):
         print(f'Performing greedy (hill climbing) search for {self.seconds} seconds')
         print("Initial Board:")
-        print(self.board)
-        print(self.random_restart(True))
+        print(self.board.board)
+        best_board, cost, total_neighbor_count, moves = self.random_restart(True)
+        self.print_solution(best_board, cost, total_neighbor_count, moves)
 
-    def random_restart(self, enable_sideways):
+    def random_restart(self):
 
         end_time = time.time() + self.seconds
 
         best_board = self.board
-        best_cost = min(self.calculate_heuristic(self.board))
+        best_cost = self.calculate_heuristic(self.board.board)
         count = 0
+
+        solution = None
 
         moves = []
         total_neighbor_count = 0
-        total_cost = 0
-        greedy_counter = 1
+
+        solution_cost = math.inf
 
         while time.time() < end_time:
-
-            if greedy_counter <= MAX_GREEDY_ITERATIONS:
-                current_board, current_cost, move_list, neighbor_count = self.greedy_hill_climbing(enable_sideways)
-
-                # greedy_counter += 1
-            else:
-                time_diff = end_time - time.time()
-                current_board, current_cost, move_list, neighbor_count = self.hill_climbing_annealing(best_board, time_diff, count)
-
-            # print(current_board)
-            # print(current_cost)
+            time_diff = end_time - time.time()
+            current_board, current_cost, move_list, neighbor_count = self.hill_climbing_annealing(best_board,
+                                                                                                  time_diff, count)
             if current_cost < best_cost:
                 best_board = current_board
                 best_cost = current_cost
-                total_cost += best_cost
                 moves.extend(move_list)
 
             count += 1
             total_neighbor_count += neighbor_count
 
             if best_cost == 0:
-                break
-        # print(best_board)
-        # print(best_cost)
-        # print("Iterations: ", count)
-        return best_board, best_cost, total_neighbor_count, total_cost, moves
+                if best_board.cost < solution_cost:
+                    solution_cost = best_board.cost
+                    solution = best_board.board, best_board.cost, total_neighbor_count, moves
+                best_board = self.board
+                best_cost = self.calculate_heuristic(self.board.board)
+                count = 0
+                moves = []
+                total_neighbor_count = 0
 
-    def greedy_hill_climbing(self, enable_sideways):
+        if solution is None:
+            return best_board.board, best_board.cost, total_neighbor_count, moves
+
+        return solution
+
+    def greedy_hill_climbing(self, enable_sideways, board):
 
         local_min = False
 
         count = 0
         sideways_move_count = 0
-        new_board = self.board
-        current_cost = min(self.calculate_heuristic(self.board))
+        new_board = board
+        current_cost = self.calculate_heuristic(new_board.board)
 
         move_list = []
 
         total_neighbor_count = 0
 
         while not local_min:
-            current_cost = min(self.calculate_heuristic(new_board))
+
+            current_cost = self.calculate_heuristic(new_board.board)
+
             best_neighbor, best_neighbor_score, neighbor_count = self._get_best_neighbor(enable_sideways, new_board)
-            best_neighbor_board = best_neighbor.board
+            best_neighbor_board = best_neighbor.board.board
             total_neighbor_count += neighbor_count
 
             if best_neighbor_score < current_cost:
                 new_board = best_neighbor_board
-                move_list.append((best_neighbor.value, best_neighbor.direction))
+                move_list.append(Move(best_neighbor.value, best_neighbor.direction))
+                if best_neighbor_score == 0:
+                    local_min = True
             elif best_neighbor_score == current_cost and sideways_move_count > MAX_SIDEWAYS_MOVES:
                 new_board = best_neighbor_board
-                move_list.append((best_neighbor.value, best_neighbor.direction))
+                move_list.append(Move(best_neighbor.value, best_neighbor.direction))
                 sideways_move_count += 1
             else:
                 local_min = True
@@ -105,23 +110,24 @@ class HillClimbing(Algorithm):
 
         neighbor_count = 0
 
-        current_board_cost = min(self.calculate_heuristic(current_board))
+        current_board_cost = self.calculate_heuristic(current_board)
 
-        neighbors = self.neighbors(current_board)
-        neighbor_count += len(neighbors)
+        neighbors = current_board.neighbors
 
         sideways_neighbors = []
         tied_neighbors = []
 
-        best_neighbor_score = min(self.calculate_heuristic(neighbors[0].board))
+        best_neighbor_score = self.calculate_heuristic(neighbors[0].board)
 
         for neighbor in neighbors:
-            neighbor_score = min(self.calculate_heuristic(neighbor.board))
+            neighbor_score = self.calculate_heuristic(neighbor.board)
+            neighbor_count += 1
 
             if neighbor_score < best_neighbor_score:
                 tied_neighbors = [(neighbor, neighbor_score)]
-
                 best_neighbor_score = neighbor_score
+                if neighbor_score == 0:
+                    break
             elif neighbor_score == best_neighbor_score:
                 tied_neighbors.append((neighbor, neighbor_score))
 
@@ -137,7 +143,7 @@ class HillClimbing(Algorithm):
 
         new_board = current_board
 
-        board_size = len(new_board)
+        board_size = len(new_board.board)
         size_ratio = MIN_BOARD_SIZE / board_size
 
         temp_modifier_constant = size_ratio * min(TEMP_MODIFIER_BASE, 1 + (
@@ -147,38 +153,36 @@ class HillClimbing(Algorithm):
                 INITIAL_TEMP_BASE / time_diff))  # decrease == decrease in random probability
 
         # TODO: Change stepcount based on time
-        max_time_step = 1000
+        max_time_step = 100
 
         current_time_step = 1
 
         initial_temp = initial_temp_constant
 
-        probabilities = []
+        current_cost = self.calculate_heuristic(new_board.board)
 
-        costs = []
+        probabilities = []
 
         move_list = []
         total_neighbor_count = 0
 
         while current_time_step <= max_time_step:
-            current_cost = min(self.calculate_heuristic(new_board))
+            current_cost = self.calculate_heuristic(new_board.board)
 
             if current_cost == 0:
                 break
 
-            neighbors = self.neighbors(new_board)
+            neighbors = new_board.neighbors()
             total_neighbor_count += len(neighbors)
 
             chosen_neighbor = random.choice(neighbors)
             chosen_neighbor_board = chosen_neighbor.board
 
-            neighbor_cost = min(self.calculate_heuristic(chosen_neighbor_board))
-
-            costs.append(current_cost)
+            neighbor_cost = self.calculate_heuristic(chosen_neighbor_board.board)
 
             if neighbor_cost <= current_cost:
                 new_board = chosen_neighbor_board
-                move_list.append((chosen_neighbor.value, chosen_neighbor.direction))
+                move_list.append(Move(chosen_neighbor.value, chosen_neighbor.direction))
                 move_probability = 1
             else:
                 move_probability = math.exp((current_cost - neighbor_cost) / self._calculate_temperature(
@@ -186,10 +190,7 @@ class HillClimbing(Algorithm):
                     initial_temp, temp_modifier_constant))
                 if random.random() <= move_probability:
                     new_board = chosen_neighbor_board
-                    move_list.append((chosen_neighbor.value, chosen_neighbor.direction))
-
-            print(current_time_step)
-            print(move_probability)
+                    move_list.append(Move(chosen_neighbor.value, chosen_neighbor.direction))
 
             probabilities.append(move_probability)
 

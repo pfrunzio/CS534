@@ -14,6 +14,29 @@ class Direction(Enum):
     LEFT = (0, -1)
     RIGHT = (0, 1)
 
+    def __str__(self):
+        direction = ''
+
+        if self == Direction.UP:
+            direction = "UP"
+        elif self == Direction.DOWN:
+            direction = "DOWN"
+        elif self == Direction.LEFT:
+            direction = "LEFT"
+        elif self == Direction.RIGHT:
+            direction = "RIGHT"
+
+        return direction
+
+
+class Move:
+    def __init__(self, value, direction):
+        self.direction = direction
+        self.value = value
+
+    def __str__(self):
+        return f'{self.value} {self.direction}'
+
 
 # return type of Algorithm.neighbors(board)
 Neighbor = namedtuple('neighbor', 'board value direction')
@@ -31,7 +54,6 @@ class Algorithm(ABC):
     @abstractmethod
     def start(self):
         pass
-
 
     # to be run once one init, and never again
     def goal_state(self, board):
@@ -87,14 +109,28 @@ class Algorithm(ABC):
                 current = board[x][y]
                 if current == 0:
                     continue
-                front_heuristic += self._manhattan_distance_to_goal((x, y), current, True) * (current if self.weighted else 1)
-                back_heuristic += self._manhattan_distance_to_goal((x, y), current, False) * (current if self.weighted else 1)
+                front_heuristic += self._manhattan_distance_to_goal((x, y), current, True) * (
+                    current if self.weighted else 1)
+                back_heuristic += self._manhattan_distance_to_goal((x, y), current, False) * (
+                    current if self.weighted else 1)
         return front_heuristic, back_heuristic
 
     # @cache
     def _manhattan_distance_to_goal(self, location, value, front):
         location_2 = self.goal_state_front_blanks[value] if front else self.goal_state_back_blanks[value]
-        return abs(location[0]-location_2[0]) + abs(location[1]-location_2[1])
+        return abs(location[0] - location_2[0]) + abs(location[1] - location_2[1])
+    def print_solution(self, best_board, cost, total_neighbor_count, moves):
 
+        final_heuristic = self.calculate_heuristic(best_board)
 
+        print(f'Move Sequence:')
+        for move in moves:
+            print(move)
+        print(f'Final Board State: ({"SOLVED" if final_heuristic == 0 else "UNSOLVED"})\n{best_board}')
+        print(f'Final Board Heuristic: {final_heuristic}')
+        #TODO This is currently all neighbors expanded, not all heuristic values computed (check if this is correct metric)
+        print(f'Total Nodes Expanded: {total_neighbor_count}')
+        print(f'Total # of Moves: {len(moves)}')
+        print(f'Total Cost: {cost}')
+        print(f'Estimated Branching Factor: TODO')
 
