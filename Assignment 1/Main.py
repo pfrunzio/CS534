@@ -4,6 +4,7 @@ import sys
 import HillClimbing
 import Algorithm
 import AStar
+from Board import Board
 
 COMMAND_ARGUMENT_ASTAR = "npuzzle"
 COMMAND_ARGUMENT_HILLCLIMB = "greedy"
@@ -59,8 +60,6 @@ def main(argv):
                 weight = True
             elif bool == "false":
                 weight = False
-
-            print(heuristic)
 
             if not heuristic.lower() in [Algorithm.HEURISTIC_TELEPORT, Algorithm.HEURISTIC_SLIDE]:
                 print("Unknown heuristic for command argument 2", command_format)
