@@ -23,7 +23,7 @@ class HillClimbing(Algorithm):
         print(f'Performing greedy (hill climbing) search for {self.seconds} seconds')
         print("Initial Board:")
         print(self.board.board)
-        best_board, cost, total_neighbor_count, moves = self.random_restart(True)
+        best_board, cost, total_neighbor_count, moves = self.random_restart()
         self.print_solution(best_board, cost, total_neighbor_count, moves)
 
     def random_restart(self):
@@ -87,7 +87,7 @@ class HillClimbing(Algorithm):
 
             best_neighbor, best_neighbor_score, neighbor_count = self._get_best_neighbor(enable_sideways, new_board)
             best_neighbor_board = best_neighbor.board.board
-            total_neighbor_count += neighbor_count
+            total_neighbor_count += 1
 
             if best_neighbor_score < current_cost:
                 new_board = best_neighbor_board
@@ -173,7 +173,7 @@ class HillClimbing(Algorithm):
                 break
 
             neighbors = new_board.neighbors()
-            total_neighbor_count += len(neighbors)
+            total_neighbor_count += 1
 
             chosen_neighbor = random.choice(neighbors)
             chosen_neighbor_board = chosen_neighbor.board
