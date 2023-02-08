@@ -4,7 +4,7 @@ from enum import Enum
 from copy import copy, deepcopy
 from collections import namedtuple
 
-HEURISTIC_TELEPORT = "teleport"
+HEURISTIC_TELEPORT = "teleporting"
 HEURISTIC_SLIDE = "sliding"
 
 
