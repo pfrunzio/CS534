@@ -133,5 +133,5 @@ class Algorithm(ABC):
         print(f'Total Nodes Expanded: {total_neighbor_count}')
         print(f'Total # of Moves: {len(moves)}')
         print(f'Total Cost: {cost}')
-        print(f'Estimated Branching Factor: TODO')
+        print("Estimated Branching Factor: {}".format(pow(total_neighbor_count, 1 / len(moves))))
 

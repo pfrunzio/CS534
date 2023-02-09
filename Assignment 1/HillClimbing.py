@@ -44,7 +44,9 @@ class HillClimbing(Algorithm):
         while time.time() < end_time:
             time_diff = end_time - time.time()
             current_board, current_cost, move_list, neighbor_count = self.hill_climbing_annealing(best_board,
-                                                                                                  time_diff, count)
+                                                                                                  time_diff, True,
+                                                                                                  INITIAL_TEMP_BASE,
+                                                                                                  TEMP_MODIFIER_BASE)
             if current_cost < best_cost:
                 best_board = current_board
                 best_cost = current_cost
@@ -140,21 +142,25 @@ class HillClimbing(Algorithm):
 
         return random.choice(tied_neighbors), neighbor_count
 
-    def hill_climbing_annealing(self, current_board, time_diff, iteration_num):
+    def hill_climbing_annealing(self, current_board, time_diff, modified_temp_constants, temp_base, temp_modifier):
 
         new_board = current_board
 
         board_size = len(new_board.board)
         size_ratio = MIN_BOARD_SIZE / board_size
 
-        temp_modifier_constant = size_ratio * min(TEMP_MODIFIER_BASE, 1 + (
-                TEMP_MODIFIER_BASE / time_diff))  # decrease in constant == increase in random probability
+        if modified_temp_constants:
+            temp_modifier_constant = size_ratio * min(temp_modifier, 1 + (
+                    temp_modifier / time_diff))  # decrease in constant == increase in random probability
 
-        initial_temp_constant = max(1, INITIAL_TEMP_BASE - (
-                INITIAL_TEMP_BASE / time_diff))  # decrease == decrease in random probability
+            initial_temp_constant = max(1, temp_base - (
+                    temp_base / time_diff))  # decrease == decrease in random probability
+        else:
+            temp_modifier_constant = temp_modifier
+            initial_temp_constant = temp_base
 
         # TODO: Change stepcount based on time
-        max_time_step = 100
+        max_time_step = 1000
 
         current_time_step = 1
 
@@ -217,3 +223,87 @@ class HillClimbing(Algorithm):
         plt.xlabel("Time Step")
         plt.title(f'Cost vs Time (Iteration: {iteration})')
         plt.show()
+
+    def graph_greedy_vs_annealing_vs_time(self, board, title):
+
+        annealing = self._graph_time_helper(False, board, INITIAL_TEMP_BASE, TEMP_MODIFIER_BASE, True)
+        greedy = self._graph_time_helper(True, board, INITIAL_TEMP_BASE, TEMP_MODIFIER_BASE, True)
+
+        print(annealing[0])
+
+        plt.scatter(annealing[0], annealing[1], c='b', marker='x', label='Annealing')
+        plt.scatter(greedy[0], greedy[1], c='r', marker='o', label='Greedy')
+        plt.legend(loc='upper left')
+        plt.ylabel("Heuristic Cost")
+        plt.xlabel("Time")
+        plt.title(
+            f'Heuristic Cost vs Time {title} {"(Weighted Heuristic)" if self.weighted else "(Unweighted Heuristic)"}')
+        plt.show()
+
+    def graph_annealing_temp_vs_time(self, board, title):
+
+        annealing1 = self._graph_time_helper(False, board, 10, TEMP_MODIFIER_BASE, False)
+        annealing2 = self._graph_time_helper(False, board, 5, TEMP_MODIFIER_BASE, False)
+        annealing3 = self._graph_time_helper(False, board, 1, TEMP_MODIFIER_BASE, False)
+
+        plt.scatter(annealing1[0], annealing1[1], c='b', marker='x', label='Initial Temp: 10')
+        plt.scatter(annealing2[0], annealing2[1], c='r', marker='o', label='Initial Temp: 5')
+        plt.scatter(annealing3[0], annealing3[1], c='g', marker='^', label='Initial Temp: 1')
+
+        plt.legend(loc='upper left')
+        plt.ylabel("Heuristic Cost")
+        plt.xlabel("Time")
+        plt.title(
+            f'Heuristic Cost vs Time w/ Initial Temp\n{title} {"(Weighted Heuristic)" if self.weighted else "(Unweighted Heuristic)"}')
+        plt.show()
+
+    def _graph_time_helper(self, greedy, board, temp_base, temp_mod, modified_temp_constant):
+
+        best_board = board
+        best_cost = self.calculate_heuristic(self.board.board)
+
+        solution = None
+
+        moves = []
+        total_neighbor_count = 0
+
+        solution_cost = math.inf
+
+        heuristic_cost_time = ([], [])
+        end_time = time.time() + self.seconds
+        start_time = time.time()
+        while time.time() < end_time:
+            current_time = time.time()
+            time_diff = end_time - time.time()
+
+            if greedy:
+                current_board, current_cost, move_list, neighbor_count = self.greedy_hill_climbing(True, board)
+            else:
+                current_board, current_cost, move_list, neighbor_count = self.hill_climbing_annealing(best_board,
+                                                                                                      time_diff, modified_temp_constant,
+                                                                                                      temp_base,
+                                                                                                      temp_mod)
+
+            heuristic_cost_time[1].append(current_cost)
+            heuristic_cost_time[0].append(current_time - start_time)
+
+            if current_cost < best_cost:
+                best_board = current_board
+                best_cost = current_cost
+                moves.extend(move_list)
+
+            total_neighbor_count += neighbor_count
+
+            if best_cost == 0:
+                if best_board.cost < solution_cost:
+                    solution_cost = best_board.cost
+                    solution = best_board.board, best_board.cost, total_neighbor_count, moves
+                best_board = self.board
+                best_cost = self.calculate_heuristic(self.board.board)
+                moves = []
+                total_neighbor_count = 0
+
+        if solution is None:
+            return heuristic_cost_time
+
+        return heuristic_cost_time
