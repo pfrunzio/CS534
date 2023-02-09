@@ -124,14 +124,15 @@ class Algorithm(ABC):
 
         final_heuristic = self.calculate_heuristic(best_board)
 
-        print(f'Move Sequence:')
+        print(f'\nMove Sequence:')
         for move in moves:
             print(move)
-        print(f'Final Board State: ({"SOLVED" if final_heuristic == 0 else "UNSOLVED"})\n{best_board}')
-        print(f'Final Board Heuristic: {final_heuristic}')
+        print(f'\nFinal Board State: ({"SOLVED" if final_heuristic == 0 else "UNSOLVED"})\n{best_board}')
+        print(f'\nFinal Board Heuristic: {final_heuristic}')
         #TODO This is currently all neighbors expanded, not all heuristic values computed (check if this is correct metric)
         print(f'Total Nodes Expanded: {total_neighbor_count}')
         print(f'Total # of Moves: {len(moves)}')
         print(f'Total Cost: {cost}')
-        print(f'Estimated Branching Factor: TODO')
+        print(f'Estimated Branching Factor: {pow(total_neighbor_count, 1 / len(moves))}\n')
+        print()
 

@@ -63,6 +63,9 @@ class AStar(Algorithm):
         print("\nPath:")
         print("\n".join(path))
 
+        print("\nFinal Board State:")
+        print(end)
+
         print("\nCost: {}".format(end.cost))
         print("Length: {}".format(len(path)))
 
