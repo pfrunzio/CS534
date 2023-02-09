@@ -149,6 +149,9 @@ class HillClimbing(Algorithm):
         board_size = len(new_board.board)
         size_ratio = MIN_BOARD_SIZE / board_size
 
+        if time_diff <= 0:
+            time_diff = .1
+
         if modified_temp_constants:
             temp_modifier_constant = size_ratio * min(temp_modifier, 1 + (
                     temp_modifier / time_diff))  # decrease in constant == increase in random probability
