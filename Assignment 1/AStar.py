@@ -31,19 +31,14 @@ class AStar(Algorithm):
             current = fringe.get()[1]
             self.nodes_expanded += 1
 
-            heuristic = \
-                self.calculate_heuristic(current) \
-                if (self.heuristic_type != "greedy") \
-                else self._calculate_greedy_heuristic(current)
-
-            if heuristic == 0:
+            if self._calculate_heuristic(current) == 0:
                 self.elapsed_time = time.time() - start_time
                 return current
 
             for board, value, direction in current.neighbors():
                 if board not in visited or board.cost < visited[board]:
                     visited[current] = current.cost
-                    priority = board.cost + self.calculate_heuristic(board)
+                    priority = board.cost + self._calculate_heuristic(board)
                     fringe.put((priority, board))
 
     def _create_path_string(self, goal):
@@ -75,7 +70,12 @@ class AStar(Algorithm):
 
         print()
 
+    def _calculate_heuristic(self, board):
+        return self.calculate_heuristic(board)\
+            if (self.heuristic_type != "greedy") \
+            else self._calculate_greedy_heuristic(board)
+
     def _calculate_greedy_heuristic(self, board):
-        greedy = HillClimbing(board, self.weighted, 0)
+        greedy = HillClimbing(board, False, 0)
         local_min, current_cost, _, _ = greedy.greedy_hill_climbing(False, board)
-        return current_cost + self.calculate_heuristic(local_min)
+        return 1 * (current_cost + self.calculate_heuristic(local_min))
