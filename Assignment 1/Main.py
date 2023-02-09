@@ -48,7 +48,7 @@ def main(argv):
             except:
                 print("Exception: Invalid seconds for command argument 3", command_format)
                 continue
-            driver = HillClimbing.HillClimbing(board, True, seconds)
+            driver = HillClimbing.HillClimbing(board, False, seconds)
 
         elif algorithm == COMMAND_ARGUMENT_ASTAR:
 

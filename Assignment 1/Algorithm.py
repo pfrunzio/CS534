@@ -120,6 +120,7 @@ class Algorithm(ABC):
     def _manhattan_distance_to_goal(self, location, value, front):
         location_2 = self.goal_state_front_blanks[value] if front else self.goal_state_back_blanks[value]
         return abs(location[0] - location_2[0]) + abs(location[1] - location_2[1])
+
     def print_solution(self, best_board, cost, total_neighbor_count, moves):
 
         final_heuristic = self.calculate_heuristic(best_board)
@@ -129,10 +130,7 @@ class Algorithm(ABC):
             print(move)
         print(f'\nFinal Board State: ({"SOLVED" if final_heuristic == 0 else "UNSOLVED"})\n{best_board}')
         print(f'\nFinal Board Heuristic: {final_heuristic}')
-        #TODO This is currently all neighbors expanded, not all heuristic values computed (check if this is correct metric)
         print(f'Total Nodes Expanded: {total_neighbor_count}')
         print(f'Total # of Moves: {len(moves)}')
         print(f'Total Cost: {cost}')
-        print(f'Estimated Branching Factor: {pow(total_neighbor_count, 1 / len(moves))}\n')
-        print()
-
+        print(f'Estimated Branching Factor: {pow(total_neighbor_count, 1 / len(moves)) if len(moves != 0) else 0}\n')
