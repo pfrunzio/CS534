@@ -76,6 +76,7 @@ class HillClimbing(Algorithm):
         count = 0
         sideways_move_count = 0
         new_board = board
+        path_cost = 0
         current_cost = self.calculate_heuristic(new_board.board)
 
         move_list = []
@@ -92,6 +93,7 @@ class HillClimbing(Algorithm):
             total_neighbor_count += 1
 
             if best_neighbor_score < current_cost:
+                path_cost += best_neighbor_board.value
                 new_board = best_neighbor_board
                 move_list.append(Move(best_neighbor_board.value, best_neighbor_board.direction))
                 if best_neighbor_score == 0:
@@ -105,7 +107,7 @@ class HillClimbing(Algorithm):
 
             count += 1
 
-        return new_board, current_cost, move_list, total_neighbor_count
+        return new_board, path_cost, move_list, total_neighbor_count
 
     # TODO: if heuristic = 0, return immediately?
     def _get_best_neighbor(self, enable_sideways, current_board):
