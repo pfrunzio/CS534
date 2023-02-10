@@ -147,14 +147,14 @@ class HillClimbing(Algorithm):
 
         new_board = current_board
 
-        board_size = len(new_board.board)
-        size_ratio = MIN_BOARD_SIZE / board_size
+        # board_size = len(new_board.board)
+        # size_ratio = MIN_BOARD_SIZE / board_size
 
         if time_diff <= 0:
             time_diff = .1
 
         if modified_temp_constants:
-            temp_modifier_constant = size_ratio * min(temp_modifier, 1 + (
+            temp_modifier_constant = min(temp_modifier, 1 + (
                     temp_modifier / time_diff))  # decrease in constant == increase in random probability
 
             initial_temp_constant = max(1, temp_base - (
@@ -207,18 +207,18 @@ class HillClimbing(Algorithm):
 
             current_time_step += 1
 
-        # self._graph_temperature(probabilities, list(range(1, max_time_step + 1)), iteration_num)
+        # self._graph_temperature(probabilities, list(range(1, current_time_step)), time_diff)
         # self._graph_cost_vs_time(costs, list(range(1, max_time_step + 1)), iteration_num)
         return new_board, current_cost, move_list, total_neighbor_count
 
     def _calculate_temperature(self, time_step, initial_temp, temp_rate):
         return initial_temp / math.log(time_step + temp_rate)
 
-    def _graph_temperature(self, probabilities, time_steps, iteration):
+    def _graph_temperature(self, probabilities, time_steps, time):
         plt.scatter(time_steps, probabilities)
         plt.ylabel("Move Probability")
         plt.xlabel("Time Step")
-        plt.title(f'Probability vs Time (Iteration: {iteration})')
+        plt.title(f'Probability vs Timestep (Time Remaining: {time})')
         plt.show()
 
     def _graph_cost_vs_time(self, costs, time_steps, iteration):
@@ -268,6 +268,21 @@ class HillClimbing(Algorithm):
         plt.scatter(annealing1[0], annealing1[1], c='b', marker='x', label='Initial Temp: 10')
         plt.scatter(annealing2[0], annealing2[1], c='r', marker='o', label='Initial Temp: 5')
         plt.scatter(annealing3[0], annealing3[1], c='g', marker='^', label='Initial Temp: 1')
+
+        plt.legend(loc='upper left')
+        plt.ylabel("Heuristic Cost")
+        plt.xlabel("Time")
+        plt.title(
+            f'Heuristic Cost vs Time w/ Initial Temp\n{title} {"(Weighted Heuristic)" if self.weighted else "(Unweighted Heuristic)"}')
+        plt.show()
+
+    def graph_modified_temp_vs_unmodified_temp(self, board, title):
+
+        modified = self._graph_time_helper(False, board, INITIAL_TEMP_BASE, TEMP_MODIFIER_BASE, True, True)
+        unmodified = self._graph_time_helper(False, board, 1, TEMP_MODIFIER_BASE, False, True)
+
+        plt.scatter(modified[0], modified[1], c='b', marker='x', label='Modified Temp Params')
+        plt.scatter(unmodified[0], unmodified[1], c='r', marker='o', label='Unmodified Temp Params')
 
         plt.legend(loc='upper left')
         plt.ylabel("Heuristic Cost")
