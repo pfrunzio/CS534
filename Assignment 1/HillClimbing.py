@@ -109,7 +109,6 @@ class HillClimbing(Algorithm):
 
         return new_board, path_cost, move_list, total_neighbor_count, current_cost
 
-    # TODO: if heuristic = 0, return immediately?
     def _get_best_neighbor(self, enable_sideways, current_board):
 
         neighbor_count = 0
@@ -147,9 +146,6 @@ class HillClimbing(Algorithm):
 
         new_board = current_board
 
-        # board_size = len(new_board.board)
-        # size_ratio = MIN_BOARD_SIZE / board_size
-
         if time_diff <= 0:
             time_diff = .1
 
@@ -163,7 +159,6 @@ class HillClimbing(Algorithm):
             temp_modifier_constant = temp_modifier
             initial_temp_constant = temp_base
 
-        # TODO: Change stepcount based on time
         max_time_step = 1000
 
         current_time_step = 1
@@ -207,8 +202,6 @@ class HillClimbing(Algorithm):
 
             current_time_step += 1
 
-        # self._graph_temperature(probabilities, list(range(1, current_time_step)), time_diff)
-        # self._graph_cost_vs_time(costs, list(range(1, max_time_step + 1)), iteration_num)
         return new_board, current_cost, move_list, total_neighbor_count
 
     def _calculate_temperature(self, time_step, initial_temp, temp_rate):

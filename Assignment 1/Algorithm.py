@@ -116,7 +116,6 @@ class Algorithm(ABC):
                     current if self.weighted else 1)
         return front_heuristic, back_heuristic
 
-    # @cache
     def _manhattan_distance_to_goal(self, location, value, front):
         location_2 = self.goal_state_front_blanks[value] if front else self.goal_state_back_blanks[value]
         return abs(location[0] - location_2[0]) + abs(location[1] - location_2[1])
