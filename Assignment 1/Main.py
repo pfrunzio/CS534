@@ -29,13 +29,13 @@ def main(argv):
 
         board = None
 
-        try:
-            directory = './Boards/' + argv[1]
-            board = Board(pd.read_csv(directory, sep=',', header=None).replace('B', 0).values.astype(int))
+        # try:
+        directory = './Boards/' + argv[1]
+        board = Board(pd.read_csv(directory, sep=',', header=None).replace('B', 0).values.astype(int))
 
-        except Exception as e:
-            print(e, command_format)
-            continue
+        # except Exception as e:
+        #     print(e, command_format)
+        #     continue
 
         algorithm = argv[0]
 

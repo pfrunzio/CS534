@@ -86,7 +86,7 @@ class AStar(Algorithm):
 
     def _calculate_greedy_heuristic(self, board):
         copy = Board(board.board)
-        local_min, current_cost, _, _, _ = HillClimbing(copy, False, 0).greedy_hill_climbing(False, copy)
+        local_min, current_cost, _, _ = HillClimbing(copy, False, 0).greedy_hill_climbing(False, copy)
         local_min.cost = 0
 
         a_star = AStar(local_min, HEURISTIC_SLIDE, self.weighted, 10, 0.001)

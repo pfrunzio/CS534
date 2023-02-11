@@ -116,6 +116,7 @@ class Algorithm(ABC):
                     current if self.weighted else 1)
         return front_heuristic, back_heuristic
 
+    # @cache
     def _manhattan_distance_to_goal(self, location, value, front):
         location_2 = self.goal_state_front_blanks[value] if front else self.goal_state_back_blanks[value]
         return abs(location[0] - location_2[0]) + abs(location[1] - location_2[1])
@@ -132,4 +133,4 @@ class Algorithm(ABC):
         print(f'Total Nodes Expanded: {total_neighbor_count}')
         print(f'Total # of Moves: {len(moves)}')
         print(f'Total Cost: {cost}')
-        print(f'Estimated Branching Factor: {pow(total_neighbor_count, 1 / len(moves)) if len(moves)!= 0 else 0}\n')
+        print(f'Estimated Branching Factor: {pow(total_neighbor_count, 1 / len(moves)) if len(moves != 0) else 0}\n')
