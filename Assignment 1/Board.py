@@ -54,9 +54,6 @@ class Board:
     def __lt__(self, other):
         np.less(self.board, other.board)
 
-    #def __le__(self, other):
-    #    return np.less_equal(self.board, other.board)
-
     # allows Board to be treated as a normal 2d array
     def __getitem__(self, item):
         return self.board[item]
@@ -66,9 +63,6 @@ class Board:
 
     def __len__(self):
         return len(self.board)
-
-    #def __repr__(self):
-    #    return self.board
 
     def __str__(self):
         return '\n'.join(map(str, self.board))
