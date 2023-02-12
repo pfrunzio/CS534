@@ -6,6 +6,8 @@ from Board import Board
 import time
 
 
+GREEDY_HEURISTIC_DEPTH = 15
+
 class AStar(Algorithm):
 
     def __init__(self, board, heuristic, weighted):
@@ -82,13 +84,12 @@ class AStar(Algorithm):
     # Part 3 Code:
     def _calculate_greedy_heuristic(self, board):
         copy = Board(board.board)
-        # local_min, cost, _, _, _ = HillClimbing(copy, False, 0).greedy_hill_climbing(False, copy)
         local_min = self._hill_climbing(copy)
         if type(local_min) is not Board:
             return local_min
 
         cost = local_min.cost
-        rest_cost = self._greedy_a_star(Board(local_min.board), 10, 15)
+        rest_cost = self._greedy_a_star(Board(local_min.board), 10, GREEDY_HEURISTIC_DEPTH)
 
         # caching values
         current = local_min
@@ -123,20 +124,27 @@ class AStar(Algorithm):
 
         nodes_explored = 0
 
+        highest = None
+        highest_cost = 0
+
         while not fringe.empty():
             current = fringe.get()[1]
             nodes_explored += 1
 
+            if current.cost >= highest_cost:
+                highest_cost = current.cost
+                highest = current
+
             if nodes_explored >= node_limit or self.calculate_heuristic(current) == 0:
-                final = current
+                final = highest
                 heuristic = self.calculate_heuristic(final)
 
                 # caching values
                 while current.previous is not None:
-                    self.greedy_cache[current] = final.cost - current.cost + heuristic
+                    self.greedy_cache[current] = final.cost - current.cost + 1.5 * heuristic
                     current = current.previous
 
-                return final.cost + heuristic
+                return final.cost + 1.5 * heuristic
 
             for board, value, direction in current.neighbors():
                 if board not in visited or board.cost < visited[board]:
