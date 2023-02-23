@@ -1,7 +1,9 @@
 import pandas as pd
 import sys
+import numpy as np
 
 from Gridworld import Gridworld
+from Gridworld import Value
 from RL import RL
 
 def main(argv):
@@ -24,7 +26,15 @@ def main(argv):
         
         try:
             directory = './Gridworlds/' + argv[0]
-            gridworld = Gridworld(pd.read_csv(directory, sep="	", header=None))
+            board = pd.read_csv(directory, sep="	", header=None)
+            start = (np.where(board == 'S')[0][0], np.where(board == 'S')[1][0])
+            board = board.replace('+', Value.COOKIE)\
+                .replace("-", Value.GLASS)\
+                .replace("X", Value.BARRIER)\
+                .replace("S", Value.EMPTY)\
+                .values.astype(int)
+
+            gridworld = Gridworld(board, start)
         except Exception as e:
             print(e, command_format)
             continue
