@@ -6,6 +6,7 @@ from Gridworld import Gridworld
 from Gridworld import Value
 from RL import RL
 
+
 def main(argv):
 
     command_format = "\ncommands: [gridworld file] [seconds to run for] [per action reward] [transition model] [time based?]\n"
@@ -40,7 +41,7 @@ def main(argv):
             continue
         
         try:
-            runtime = float(argv[1]) #assuming this is positive
+            runtime = float(argv[1])  # assuming this is positive
             
             if runtime <= 0:
                 raise 
@@ -49,7 +50,7 @@ def main(argv):
             continue
         
         try:
-            reward = float(argv[2]) #assuming this is non-positive
+            reward = float(argv[2])  # assuming this is non-positive
             
             if reward > 0:
                 raise 
@@ -58,7 +59,7 @@ def main(argv):
             continue
         
         try:
-            transition_model = float(argv[3]) #assuming this is <=1
+            transition_model = float(argv[3])  # assuming this is <=1
             
             if transition_model > 1:
                 raise 

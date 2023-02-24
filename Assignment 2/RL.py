@@ -1,5 +1,7 @@
+from Gridworld import Action
 
-class RL():
+
+class RL:
     def __init__(self, gridworld, runtime, reward, transition_model, time_based):
         self.gridworld = gridworld
         self.runtime = runtime
