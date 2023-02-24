@@ -25,7 +25,7 @@ class RL:
         # TODO
 
         # How to use the Gridworld code:
-        # new_board, reward, terminal = self.gridworld(Action.UP, self.reward, self.transition_model)
+        # new_board, reward, terminal = self.gridworld.take_action(Action.UP, self.reward, self.transition_model)
         # state = self.gridworld.position
 
         # ^ this should be all you need to call from Gridworld
