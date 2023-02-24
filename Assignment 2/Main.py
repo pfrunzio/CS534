@@ -29,7 +29,8 @@ def main(argv):
             directory = './Gridworlds/' + argv[0]
             board = pd.read_csv(directory, sep="	", header=None)
             start = (np.where(board == 'S')[0][0], np.where(board == 'S')[1][0])
-            board = board.replace('+', Value.COOKIE)\
+            board = board\
+                .replace('+', Value.COOKIE)\
                 .replace("-", Value.GLASS)\
                 .replace("X", Value.BARRIER)\
                 .replace("S", Value.EMPTY)\
