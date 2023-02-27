@@ -1,10 +1,11 @@
 import math
 import random
 import time
+from copy import deepcopy
 
-from Gridworld import Action
+from Gridworld import Action, Value
 
-EXPLORATION_RATE = 0.2
+EXPLORATION_RATE = 0.5
 
 
 class RL:
@@ -16,6 +17,7 @@ class RL:
         self.time_based = time_based
         self.future_reward_discount = 1
         self.step_size_parameter = .9
+        self.heatmap = deepcopy(gridworld)
 
         # (state, action) -> utility
         self.q_table = dict()
@@ -46,20 +48,21 @@ class RL:
                 new_board, reward, terminal = current_gridworld.take_action(action, self.per_action_reward, 1)
                 current_gridworld = new_board
                 new_state = current_gridworld.position
+                
                 new_action = self._select_action(new_state)
 
                 self._update_utility(current_state, action, reward, new_state, new_action)
 
+                self._update_heatmap(current_state)
                 current_state = new_state
                 action = new_action
-
-
-            # if(count < 11):
-                # count+=1
-                # print('\nPosition: ', current_state, '\n')
-                # print(self.q_table, '\n')
-
-        print(self.q_table, '\n')
+        
+        policy = self._generate_policy()
+        print("Policy:")
+        print(policy, "\n")
+        
+        print("Heatmap:")
+        print(self.heatmap, "\n")
         return
 
     def _select_action(self, state):
@@ -127,3 +130,30 @@ class RL:
 
     def _explore(self):
         return random.choice(list(Action))
+    
+    def _generate_policy(self):
+        policy = self.gridworld
+        
+        for row in range(len(self.gridworld.gridworld)):
+            for col in range(len(self.gridworld.gridworld[0])):
+                state = (row, col)
+                
+                if policy[row][col] == 0:
+                
+                    best_action = self._get_best_action(state)
+                    
+                    if best_action == Action.UP:
+                        policy[row][col] = Value.UP_ARROW
+                    elif best_action == Action.RIGHT:
+                        policy[row][col] = Value.RIGHT_ARROW
+                    elif best_action == Action.DOWN:
+                        policy[row][col] = Value.DOWN_ARROW
+                    elif best_action == Action.LEFT:
+                        policy[row][col] = Value.LEFT_ARROW
+        
+        return policy
+
+    def _update_heatmap(self, state):
+        row = state[0]
+        col = state[1]
+        self.heatmap[row][col] += 1

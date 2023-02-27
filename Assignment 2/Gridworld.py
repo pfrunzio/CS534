@@ -3,13 +3,18 @@ from enum import Enum
 from queue import Queue
 from copy import deepcopy
 import random
+import numpy as np
 
 
 class Value(IntEnum):
     EMPTY = 0
-    COOKIE = 10
-    GLASS = 11
-    BARRIER = 12
+    COOKIE = -10
+    GLASS = -11
+    BARRIER = -12
+    UP_ARROW = -13
+    DOWN_ARROW = -14
+    LEFT_ARROW = -15
+    RIGHT_ARROW = -16
 
 
 class Action(Enum):
@@ -83,13 +88,14 @@ class Gridworld:
 
     def __str__(self):
         string = ""
+        max_len = len(str(np.amax(self.gridworld)))
         for row, line in enumerate(self.gridworld):
             for col, val in enumerate(line):
-                if (row, col) == self.position:
-                    string += "S  "
+                if (row, col) == self.position and val == Value.EMPTY:
+                    string += "S".ljust(max_len + 2, " ")
                     continue
-                # make value 3 characters long
-                string += "{:<3}".format(self._value_str(val))
+                # make value 1 longer than max characters long
+                string += self._value_str(val).ljust(max_len + 2, " ")
             string = string.rstrip()
             string += "\n"
         return string.rstrip()
@@ -103,6 +109,15 @@ class Gridworld:
             return "-"
         if value == Value.BARRIER:
             return "X"
+        if value == Value.UP_ARROW:
+            return "^"
+        if value == Value.DOWN_ARROW:
+            return "v"
+        if value == Value.LEFT_ARROW:
+            return "<"
+        if value == Value.RIGHT_ARROW:
+            return ">"
+        
         return str(value)
 
     def __getitem__(self, item):
