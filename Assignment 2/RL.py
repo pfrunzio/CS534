@@ -5,7 +5,7 @@ from copy import deepcopy
 
 from Gridworld import Action, Value
 
-EXPLORATION_RATE = 0.5
+EXPLORATION_RATE = 0.2
 
 
 class RL:
@@ -15,8 +15,8 @@ class RL:
         self.per_action_reward = reward
         self.transition_model = transition_model
         self.time_based = time_based
-        self.future_reward_discount = 1
-        self.step_size_parameter = .9
+        self.future_reward_discount = 1 #gamma
+        self.step_size_parameter = .9 #alpha
         self.heatmap = deepcopy(gridworld)
 
         # (state, action) -> utility
@@ -34,8 +34,6 @@ class RL:
     def _rl(self):
         end_time = time.time() + self.runtime
 
-        count = 0
-
         while time.time() < end_time:
 
             terminal = False
@@ -45,7 +43,7 @@ class RL:
             action = self._select_action(current_state)
 
             while not terminal:
-                new_board, reward, terminal = current_gridworld.take_action(action, self.per_action_reward, 1)
+                new_board, reward, terminal = current_gridworld.take_action(action, self.per_action_reward, self.transition_model)
                 current_gridworld = new_board
                 new_state = current_gridworld.position
                 
@@ -74,6 +72,7 @@ class RL:
         # if you want to do SARSA, add the utility from q_table for a random/epsilon greedy action from new_state
         # if you want to do Q-Learning, add the max utility from q_table for any/all actions from new_state
 
+        # new_utility = self._q_learning_utility(state, action, reward, new_state, self.step_size_parameter)
         new_utility = self._sarsa_utility(state, action, reward, new_state, new_action, self.step_size_parameter)
 
         self.q_table[(state, action)] = new_utility
@@ -87,16 +86,15 @@ class RL:
 
     def _sarsa_utility(self, state, action, reward, new_state, new_action, step_size_parameter):
 
-        current_utility = self._get_utility(state, action) #6.264
-        new_utility = self._get_utility(new_state, new_action) #-2.736
+        current_utility = self._get_utility(state, action) 
+        new_utility = self._get_utility(new_state, new_action)
 
         return self._calculate_temporal_difference(current_utility, new_utility, reward, step_size_parameter)
 
     def _calculate_temporal_difference(self, current_utility, new_utility, reward, step_size_parameter):
         return current_utility + \
             (step_size_parameter * (reward + (self.future_reward_discount * new_utility - current_utility))) #-9
-#6.264 + .9 * (6.96 + -9)
-    #4.428
+
     def _epsilon_greedy(self, epsilon, state):
 
         rand = random.random()
@@ -138,7 +136,7 @@ class RL:
             for col in range(len(self.gridworld.gridworld[0])):
                 state = (row, col)
                 
-                if policy[row][col] == 0:
+                if policy[row][col] == Value.EMPTY or policy[row][col] == Value.COOKIE or policy[row][col] == Value.GLASS:
                 
                     best_action = self._get_best_action(state)
                     
