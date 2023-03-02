@@ -5,7 +5,7 @@ from copy import deepcopy
 
 from Gridworld import Action, Value
 
-EXPLORATION_RATE = 0.2
+EXPLORATION_RATE = 1
 
 
 class RL:
@@ -15,8 +15,8 @@ class RL:
         self.per_action_reward = reward
         self.transition_model = transition_model
         self.time_based = time_based
-        self.future_reward_discount = 1 #gamma
-        self.step_size_parameter = .9 #alpha
+        self.future_reward_discount = 1  # gamma
+        self.step_size_parameter = .9  # alpha
         self.heatmap = deepcopy(gridworld)
 
         # (state, action) -> utility
@@ -33,39 +33,48 @@ class RL:
 
     def _rl(self):
         end_time = time.time() + self.runtime
+        epsilon = 1
+        decay_rate = 0.99
+        #Decay rate is based on the runtime we give it
+        #More time = slow decay
+        if self.time_based:
+            decay_rate = 1 - (0.01 / self.runtime)
 
         while time.time() < end_time:
-
             terminal = False
             current_gridworld = self.gridworld
             current_state = current_gridworld.position
 
-            action = self._select_action(current_state)
+            action = self._select_action(current_state, epsilon)
 
             while not terminal:
-                new_board, reward, terminal = current_gridworld.take_action(action, self.per_action_reward, self.transition_model)
+                new_board, reward, terminal = current_gridworld.take_action(action, self.per_action_reward,
+                                                                            self.transition_model)
                 current_gridworld = new_board
                 new_state = current_gridworld.position
-                
-                new_action = self._select_action(new_state)
+
+                new_action = self._select_action(new_state, epsilon)
 
                 self._update_utility(current_state, action, reward, new_state, new_action)
 
                 self._update_heatmap(current_state)
                 current_state = new_state
                 action = new_action
-        
+            epsilon *= decay_rate
+            # Stops exploring when the time left is less than 1% of the given time and less than 0.1 second
+            if self.time_based:
+                if ((end_time - time.time() / self.runtime) < 0.01) and (end_time - time.time() < 0.1):
+                    epsilon = 0
         policy = self._generate_policy()
         print("Policy:")
         print(policy, "\n")
-        
+
         print("Heatmap:")
         print(self.heatmap, "\n")
         return
 
-    def _select_action(self, state):
-
-        return self._epsilon_greedy(EXPLORATION_RATE, state)
+    def _select_action(self, state, epsilon):
+        return self._epsilon_greedy(epsilon, state)
 
     def _update_utility(self, state, action, reward, new_state, new_action):
 
@@ -86,14 +95,14 @@ class RL:
 
     def _sarsa_utility(self, state, action, reward, new_state, new_action, step_size_parameter):
 
-        current_utility = self._get_utility(state, action) 
+        current_utility = self._get_utility(state, action)
         new_utility = self._get_utility(new_state, new_action)
 
         return self._calculate_temporal_difference(current_utility, new_utility, reward, step_size_parameter)
 
     def _calculate_temporal_difference(self, current_utility, new_utility, reward, step_size_parameter):
         return current_utility + \
-            (step_size_parameter * (reward + (self.future_reward_discount * new_utility - current_utility))) #-9
+               (step_size_parameter * (reward + (self.future_reward_discount * new_utility - current_utility)))  # -9
 
     def _epsilon_greedy(self, epsilon, state):
 
@@ -128,18 +137,19 @@ class RL:
 
     def _explore(self):
         return random.choice(list(Action))
-    
+
     def _generate_policy(self):
         policy = self.gridworld
-        
+
         for row in range(len(self.gridworld.gridworld)):
             for col in range(len(self.gridworld.gridworld[0])):
                 state = (row, col)
-                
-                if policy[row][col] == Value.EMPTY or policy[row][col] == Value.COOKIE or policy[row][col] == Value.GLASS:
-                
+
+                if policy[row][col] == Value.EMPTY or policy[row][col] == Value.COOKIE or policy[row][
+                    col] == Value.GLASS:
+
                     best_action = self._get_best_action(state)
-                    
+
                     if best_action == Action.UP:
                         policy[row][col] = Value.UP_ARROW
                     elif best_action == Action.RIGHT:
@@ -148,7 +158,7 @@ class RL:
                         policy[row][col] = Value.DOWN_ARROW
                     elif best_action == Action.LEFT:
                         policy[row][col] = Value.LEFT_ARROW
-        
+
         return policy
 
     def _update_heatmap(self, state):
