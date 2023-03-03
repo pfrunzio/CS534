@@ -2,10 +2,8 @@ import math
 import random
 import time
 from copy import deepcopy
-
+from threading import Timer
 from Gridworld import Action, Value
-
-EXPLORATION_RATE = 1
 
 
 class RL:
@@ -18,7 +16,8 @@ class RL:
         self.future_reward_discount = 1  # gamma
         self.step_size_parameter = .9  # alpha
         self.heatmap = deepcopy(gridworld)
-
+        self.mean_rewards = []
+        self.current_rewards = []
         # (state, action) -> utility
         self.q_table = dict()
 
@@ -27,20 +26,38 @@ class RL:
             f'Performing RL in {self.runtime} seconds with {self.per_action_reward} reward per action and actions succeeding {self.transition_model * 100} percent of the time {"taking into account" if self.time_based else "ignoring"} remains.\n')
         print("Initial World:")
         print(self.gridworld, '\n')
-
-        # start learning
-        self._rl()
-
-    def _rl(self):
-        end_time = time.time() + self.runtime
         epsilon = 1
         decay_rate = 0.99
-        #Decay rate is based on the runtime we give it
-        #More time = slow decay
+        random.seed(4545745)
+        # start learning
+        return self._rl(epsilon, decay_rate, True)
+
+    def graph_start(self, epsilon, decay_rate, time_decay):
+        print(
+            f'Performing RL in {self.runtime} seconds with {self.per_action_reward} reward per action and actions succeeding {self.transition_model * 100} percent of the time {"taking into account" if self.time_based else "ignoring"} remains.\n')
+        print("Initial World:")
+        print(self.gridworld, '\n')
+        random.seed(4545745)
+        return self._rl(epsilon, decay_rate, time_decay)
+
+    def get_mean_reward(self, new_time):
+
+        if len(self.current_rewards) != 0:
+            self.mean_rewards.append((new_time, sum(self.current_rewards) / len(self.current_rewards)))
+
+    def _rl(self, epsilon, decay_rate, time_decay):
+        end_time = time.time() + self.runtime
+        self.end_time = end_time
+
+        # Decay rate is based on the runtime we give it
+        # More time = slow decay
         if self.time_based:
             decay_rate = 1 - (0.01 / self.runtime)
 
+        start_time = time.time()
+        last_time = start_time
         while time.time() < end_time:
+
             terminal = False
             current_gridworld = self.gridworld
             current_state = current_gridworld.position
@@ -50,6 +67,14 @@ class RL:
             while not terminal:
                 new_board, reward, terminal = current_gridworld.take_action(action, self.per_action_reward,
                                                                             self.transition_model)
+
+                self.current_rewards.append(reward)
+
+                if (time.time() - last_time) >= .1:
+                    self.get_mean_reward((time.time() - start_time))
+                    # self.current_rewards = []
+                    last_time = time.time()
+
                 current_gridworld = new_board
                 new_state = current_gridworld.position
 
@@ -60,7 +85,10 @@ class RL:
                 self._update_heatmap(current_state)
                 current_state = new_state
                 action = new_action
-            epsilon *= decay_rate
+
+            if time_decay:
+                epsilon *= decay_rate
+
             # Stops exploring when the time left is less than 1% of the given time and less than 0.1 second
             if self.time_based:
                 if ((end_time - time.time() / self.runtime) < 0.01) and (end_time - time.time() < 0.1):
@@ -71,7 +99,7 @@ class RL:
 
         print("Heatmap:")
         print(self.heatmap, "\n")
-        return
+        return self.mean_rewards
 
     def _select_action(self, state, epsilon):
         return self._epsilon_greedy(epsilon, state)
@@ -81,8 +109,8 @@ class RL:
         # if you want to do SARSA, add the utility from q_table for a random/epsilon greedy action from new_state
         # if you want to do Q-Learning, add the max utility from q_table for any/all actions from new_state
 
-        # new_utility = self._q_learning_utility(state, action, reward, new_state, self.step_size_parameter)
-        new_utility = self._sarsa_utility(state, action, reward, new_state, new_action, self.step_size_parameter)
+        new_utility = self._q_learning_utility(state, action, reward, new_state, self.step_size_parameter)
+        # new_utility = self._sarsa_utility(state, action, reward, new_state, new_action, self.step_size_parameter)
 
         self.q_table[(state, action)] = new_utility
 
@@ -102,13 +130,13 @@ class RL:
 
     def _calculate_temporal_difference(self, current_utility, new_utility, reward, step_size_parameter):
         return current_utility + \
-               (step_size_parameter * (reward + (self.future_reward_discount * new_utility - current_utility)))  # -9
+            (step_size_parameter * (reward + (self.future_reward_discount * new_utility - current_utility)))  # -9
 
     def _epsilon_greedy(self, epsilon, state):
 
         rand = random.random()
 
-        if (rand < epsilon):
+        if rand < epsilon:
             return self._explore()
         else:
             return self._get_best_action(state)
