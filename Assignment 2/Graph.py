@@ -35,7 +35,7 @@ def main():
         epsilon1, epsilons1 = driver1.graph_start(.01, .99, False)
         epsilon2, epsilons2 = driver2.graph_start(.1, .99, False)
         epsilon3, epsilons3 = driver3.graph_start(.3, .99, False)
-        exploration = driver4.start()
+        exploration, epsilons4 = driver4.start()
 
         x1, y1 = zip(*epsilon1)
         x2, y2 = zip(*epsilon2)
@@ -173,8 +173,8 @@ def main():
 
     # graph_initial_epsilon(5, .99)
     # graph_decay_rate(5, 1)
-    # graph_part3_vs_part4(5)
-    graph_epsilon_vs_time(5)
+    graph_part3_vs_part4(5)
+    # graph_epsilon_vs_time(5)
     # graph_epsilons_mean_reward(5)
 
 

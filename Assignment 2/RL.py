@@ -41,10 +41,10 @@ class RL:
         random.seed(4545745)
         return self._rl(epsilon, decay_rate, time_decay)
 
-    def get_mean_reward(self, new_time, epsilon):
+    def get_mean_reward(self, new_time, epsilon, count_episodes):
         self.epsilons.append((new_time, epsilon))
         if len(self.current_rewards) != 0:
-            self.mean_rewards.append((new_time, sum(self.current_rewards) / len(self.current_rewards)))
+            self.mean_rewards.append((new_time, sum(self.current_rewards) / count_episodes))
 
     def _rl(self, epsilon, decay_rate, time_decay):
         end_time = time.time() + self.runtime
@@ -52,6 +52,9 @@ class RL:
 
         start_time = time.time()
         last_time = start_time
+
+        count_episodes = 0
+
         while time.time() < end_time:
 
             terminal = False
@@ -60,16 +63,17 @@ class RL:
 
             action = self._select_action(current_state, epsilon)
 
+            if (time.time() - last_time) >= .05:
+                self.get_mean_reward((time.time() - start_time), epsilon, count_episodes)
+                self.current_rewards = []
+                count_episodes = 0
+                last_time = time.time()
+
             while not terminal:
                 new_board, reward, terminal = current_gridworld.take_action(action, self.per_action_reward,
                                                                             self.transition_model)
 
                 self.current_rewards.append(reward)
-
-                if (time.time() - last_time) >= .1:
-                    self.get_mean_reward((time.time() - start_time), epsilon)
-                    self.current_rewards = []
-                    last_time = time.time()
 
                 current_gridworld = new_board
                 new_state = current_gridworld.position
@@ -90,6 +94,8 @@ class RL:
             if self.time_based:
                 if ((end_time - time.time()) / self.runtime) < 0.1:
                     epsilon = 0
+
+            count_episodes += 1
         policy = self._generate_policy()
         print("Policy:")
         print(policy, "\n")
