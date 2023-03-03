@@ -18,7 +18,8 @@ class RL:
         self.heatmap = deepcopy(gridworld)
         self.mean_rewards = []
         self.current_rewards = []
-        # (state, action) -> utility
+        self.epsilons = []
+
         self.q_table = dict()
 
     def start(self):
@@ -40,19 +41,14 @@ class RL:
         random.seed(4545745)
         return self._rl(epsilon, decay_rate, time_decay)
 
-    def get_mean_reward(self, new_time):
-
+    def get_mean_reward(self, new_time, epsilon):
+        self.epsilons.append((new_time, epsilon))
         if len(self.current_rewards) != 0:
             self.mean_rewards.append((new_time, sum(self.current_rewards) / len(self.current_rewards)))
 
     def _rl(self, epsilon, decay_rate, time_decay):
         end_time = time.time() + self.runtime
         self.end_time = end_time
-
-        # Decay rate is based on the runtime we give it
-        # More time = slow decay
-        if self.time_based:
-            decay_rate = 1 - (0.01 / self.runtime)
 
         start_time = time.time()
         last_time = start_time
@@ -71,8 +67,8 @@ class RL:
                 self.current_rewards.append(reward)
 
                 if (time.time() - last_time) >= .1:
-                    self.get_mean_reward((time.time() - start_time))
-                    # self.current_rewards = []
+                    self.get_mean_reward((time.time() - start_time), epsilon)
+                    self.current_rewards = []
                     last_time = time.time()
 
                 current_gridworld = new_board
@@ -90,8 +86,9 @@ class RL:
                 epsilon *= decay_rate
 
             # Stops exploring when the time left is less than 1% of the given time and less than 0.1 second
+            # TODO: This has a negligible effect on epsilon/exploration, replace with better metric?
             if self.time_based:
-                if ((end_time - time.time() / self.runtime) < 0.01) and (end_time - time.time() < 0.1):
+                if ((end_time - time.time()) / self.runtime) < 0.1:
                     epsilon = 0
         policy = self._generate_policy()
         print("Policy:")
@@ -99,7 +96,7 @@ class RL:
 
         print("Heatmap:")
         print(self.heatmap, "\n")
-        return self.mean_rewards
+        return self.mean_rewards, self.epsilons
 
     def _select_action(self, state, epsilon):
         return self._epsilon_greedy(epsilon, state)
@@ -160,7 +157,6 @@ class RL:
         try:
             return self.q_table[(state, action)]
         except KeyError as e:
-            # self.q_table[(state, action)] = 0
             return 0
 
     def _explore(self):
