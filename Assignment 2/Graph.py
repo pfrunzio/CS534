@@ -27,8 +27,6 @@ def main():
         intermediate_gridworld3 = get_gridworld("intermediate.txt")
         intermediate_gridworld4 = get_gridworld("intermediate.txt")
 
-        time
-
         driver1 = RL(intermediate_gridworld1, time, -0.04, .7, False)
         driver2 = RL(intermediate_gridworld2, time, -0.04, .7, False)
         driver3 = RL(intermediate_gridworld3, time, -0.04, .7, False)
