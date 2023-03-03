@@ -14,7 +14,7 @@ class RL:
         self.transition_model = transition_model
         self.time_based = time_based
         self.future_reward_discount = 1  # gamma
-        self.step_size_parameter = .9  # alpha
+        self.step_size_parameter = .1  # alpha
         self.heatmap = deepcopy(gridworld)
         self.mean_rewards = []
         self.current_rewards = []
