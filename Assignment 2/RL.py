@@ -14,7 +14,7 @@ class RL:
         self.transition_model = transition_model
         self.time_based = time_based
         self.future_reward_discount = 1  # gamma
-        self.step_size_parameter = .9  # alpha
+        self.step_size_parameter = .1  # alpha
         self.heatmap = deepcopy(gridworld)
         self.mean_rewards = []
         self.current_rewards = []
@@ -28,8 +28,8 @@ class RL:
         print("Initial World:")
         print(self.gridworld, '\n')
         epsilon = 1
-        decay_rate = 0.99
-        random.seed(4545745)
+        decay_rate = 0.999
+        random.seed(21)
         # start learning
         return self._rl(epsilon, decay_rate, True)
 
@@ -38,7 +38,7 @@ class RL:
             f'Performing RL in {self.runtime} seconds with {self.per_action_reward} reward per action and actions succeeding {self.transition_model * 100} percent of the time {"taking into account" if self.time_based else "ignoring"} remains.\n')
         print("Initial World:")
         print(self.gridworld, '\n')
-        random.seed(4545745)
+        random.seed(21)
         return self._rl(epsilon, decay_rate, time_decay)
 
     def get_mean_reward(self, new_time, epsilon, count_episodes):
