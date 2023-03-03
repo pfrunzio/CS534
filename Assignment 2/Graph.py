@@ -35,7 +35,7 @@ def main():
         epsilon1, epsilons1 = driver1.graph_start(.01, .99, False)
         epsilon2, epsilons2 = driver2.graph_start(.1, .99, False)
         epsilon3, epsilons3 = driver3.graph_start(.3, .99, False)
-        exploration = driver4.start()
+        exploration, epsilons4 = driver4.start()
 
         x1, y1 = zip(*epsilon1)
         x2, y2 = zip(*epsilon2)
@@ -90,12 +90,12 @@ def main():
         plt.title(f'Mean Reward vs Time (Decay Rate {decay_rate})')
         plt.show()
 
-    def graph_decay_rate(time, epsilon):
-        intermediate_gridworld1 = get_gridworld("intermediate.txt")
-        intermediate_gridworld2 = get_gridworld("intermediate.txt")
-        intermediate_gridworld3 = get_gridworld("intermediate.txt")
-        intermediate_gridworld4 = get_gridworld("intermediate.txt")
-        intermediate_gridworld5 = get_gridworld("intermediate.txt")
+    def graph_decay_rate(time, epsilon, board):
+        intermediate_gridworld1 = get_gridworld(board)
+        intermediate_gridworld2 = get_gridworld(board)
+        intermediate_gridworld3 = get_gridworld(board)
+        intermediate_gridworld4 = get_gridworld(board)
+        intermediate_gridworld5 = get_gridworld(board)
 
         driver1 = RL(intermediate_gridworld1, time, -0.04, .7, False)
         driver2 = RL(intermediate_gridworld2, time, -0.04, .7, False)
@@ -172,9 +172,9 @@ def main():
         plt.show()
 
     # graph_initial_epsilon(5, .99)
-    # graph_decay_rate(5, 1)
+    # graph_decay_rate(5, 1, "intermediate.txt")
     # graph_part3_vs_part4(5)
-    graph_epsilon_vs_time(5)
+    # graph_epsilon_vs_time(5)
     # graph_epsilons_mean_reward(5)
 
 
