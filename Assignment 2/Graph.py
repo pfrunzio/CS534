@@ -173,8 +173,8 @@ def main():
 
     # graph_initial_epsilon(1, .99)
     # graph_decay_rate(1, 1, "intermediate.txt")
-    graph_part3_vs_part4(6, "example.txt")
-    # graph_epsilon_vs_time(3, "large.txt")
+    graph_part3_vs_part4(3, "large.txt")
+    # graph_epsilon_vs_time(3, "intermediate.txt")
     # graph_epsilons_mean_reward(1)
 
 

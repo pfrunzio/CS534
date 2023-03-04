@@ -61,11 +61,7 @@ class RL:
 
         count_episodes = 0
 
-        # better exploration for part 3/4
-        if better_exploration:
-            linear_area = math.sqrt(len(self.gridworld) * len(self.gridworld[0]))
-            decay_rate = 0.99 + 0.01 * pow(math.log(50 * linear_area) / (1 - 50 * linear_area) + 1, 3)
-            self.step_size_parameter = 0.1
+        linear_area = math.sqrt(len(self.gridworld) * len(self.gridworld[0]))
 
         while time.time() < end_time:
 
@@ -77,10 +73,9 @@ class RL:
 
             # calculate graph data
             # if (time.time() - last_time) >= .025:
-            if count_episodes > 100:
-                self.get_mean_reward((time.time() - start_time), epsilon, count_episodes)
+            if count_episodes % 100 == 0:
+                self.get_mean_reward((time.time() - start_time), epsilon, 100)
                 self.current_rewards = []
-                count_episodes = 0
 
             while not terminal:
                 new_board, reward, terminal = current_gridworld.take_action(action, self.per_action_reward,
@@ -99,12 +94,18 @@ class RL:
                 current_state = new_state
                 action = new_action
 
-            # decay and time-based factors
+            epsilon *= decay_rate
+
+            # better exploration for part 3
+            if better_exploration:
+                epsilon = pow(2, (-3.32 / (1000 * linear_area)) * count_episodes)
+            # better exploration for part 4
             if self.time_based:
                 percent_used = 1 - (end_time - time.time()) / self.runtime
-                epsilon = max(pow(2, -10 * percent_used), 0)
-            else:
-                epsilon *= decay_rate
+                if percent_used <= 0.8:
+                    epsilon = pow(2, -5 * percent_used)
+                else:
+                    epsilon = pow(2, -10 * percent_used)
 
             # Stops exploring when the time left is less than 1% of the given time and less than 0.25 seconds
             # or if total time left is less than 0.05 seconds
