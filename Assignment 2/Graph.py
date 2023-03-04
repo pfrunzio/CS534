@@ -32,9 +32,9 @@ def main():
         driver3 = RL(intermediate_gridworld3, time, -0.04, .7, False)
         driver4 = RL(intermediate_gridworld4, time, -0.04, .7, False)
 
-        epsilon1, epsilons1 = driver1.graph_start(.01, .99, False)
-        epsilon2, epsilons2 = driver2.graph_start(.1, .99, False)
-        epsilon3, epsilons3 = driver3.graph_start(.3, .99, False)
+        epsilon1, epsilons1 = driver1.graph_start(.01, 1)
+        epsilon2, epsilons2 = driver2.graph_start(.1, 1)
+        epsilon3, epsilons3 = driver3.graph_start(.3, 1)
         exploration, epsilons4 = driver4.start()
 
         x1, y1 = zip(*epsilon1)
@@ -66,11 +66,11 @@ def main():
         driver4 = RL(intermediate_gridworld4, time, -0.04, .7, False)
         driver5 = RL(intermediate_gridworld5, time, -0.04, .7, False)
 
-        epsilon1, epsilons1 = driver1.graph_start(.1, decay_rate, True)
-        epsilon2, epsilons2 = driver2.graph_start(.3, decay_rate, True)
-        epsilon3, epsilons3 = driver3.graph_start(.5, decay_rate, True)
-        epsilon4, epsilons4 = driver4.graph_start(.7, decay_rate, True)
-        epsilon5, epsilons5 = driver5.graph_start(1, decay_rate, True)
+        epsilon1, epsilons1 = driver1.graph_start(.1, decay_rate)
+        epsilon2, epsilons2 = driver2.graph_start(.3, decay_rate)
+        epsilon3, epsilons3 = driver3.graph_start(.5, decay_rate)
+        epsilon4, epsilons4 = driver4.graph_start(.7, decay_rate)
+        epsilon5, epsilons5 = driver5.graph_start(1, decay_rate)
 
         x1, y1 = zip(*epsilon1)
         x2, y2 = zip(*epsilon2)
@@ -103,11 +103,11 @@ def main():
         driver4 = RL(intermediate_gridworld4, time, -0.04, .7, False)
         driver5 = RL(intermediate_gridworld5, time, -0.04, .7, False)
 
-        decay1, epsilons1 = driver1.graph_start(epsilon, .999, True)
-        decay2, epsilons2 = driver2.graph_start(epsilon, .99, True)
-        decay3, epsilons3 = driver3.graph_start(epsilon, .9, True)
-        decay4, epsilons4 = driver4.graph_start(epsilon, .75, True)
-        decay5, epsilons5 = driver5.graph_start(epsilon, .5, True)
+        decay1, epsilons1 = driver1.graph_start(epsilon, .999)
+        decay2, epsilons2 = driver2.graph_start(epsilon, .99)
+        decay3, epsilons3 = driver3.graph_start(epsilon, .9)
+        decay4, epsilons4 = driver4.graph_start(epsilon, .75)
+        decay5, epsilons5 = driver5.graph_start(epsilon, .5)
 
         x1, y1 = zip(*decay1)
         x2, y2 = zip(*decay2)
@@ -172,8 +172,8 @@ def main():
         plt.show()
 
     # graph_initial_epsilon(1, .99)
-    # graph_decay_rate(5, 1, "intermediate.txt")
-    graph_part3_vs_part4(3, "large.txt")
+    graph_decay_rate(1, 1, "intermediate.txt")
+    # graph_part3_vs_part4(3, "large.txt")
     # graph_epsilon_vs_time(5)
     # graph_epsilons_mean_reward(1)
 

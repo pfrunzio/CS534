@@ -38,22 +38,22 @@ class RL:
         random.seed(21)
 
         # start learning
-        return self._rl(epsilon, decay_rate, True)
+        return self._rl(epsilon, decay_rate)
 
-    def graph_start(self, epsilon, decay_rate, time_decay):
+    def graph_start(self, epsilon, decay_rate):
         print(
             f'Performing RL in {self.runtime} seconds with {self.per_action_reward} reward per action and actions succeeding {self.transition_model * 100} percent of the time {"taking into account" if self.time_based else "ignoring"} remains.\n')
         print("Initial World:")
         print(self.gridworld, '\n')
         random.seed(21)
-        return self._rl(epsilon, decay_rate, time_decay)
+        return self._rl(epsilon, decay_rate)
 
     def get_mean_reward(self, new_time, epsilon, count_episodes):
         self.epsilons.append((new_time, epsilon))
         if len(self.current_rewards) != 0:
             self.mean_rewards.append((new_time, sum(self.current_rewards) / count_episodes))
 
-    def _rl(self, epsilon, decay_rate, time_decay):
+    def _rl(self, epsilon, decay_rate):
         end_time = time.time() + self.runtime
         self.end_time = end_time
 
@@ -62,7 +62,6 @@ class RL:
         count_episodes = 0
 
         # better exploration for part 3/4
-        # decay_rate =
         # self.step_size_parameter =
 
         while time.time() < end_time:
@@ -98,8 +97,7 @@ class RL:
                 action = new_action
 
             # decay and time-based factors
-            if time_decay:
-                epsilon *= decay_rate
+            epsilon *= decay_rate
 
             # Stops exploring when the time left is less than 1% of the given time and less than 0.1 second
             # TODO: This has a negligible effect on epsilon/exploration, replace with better metric?
