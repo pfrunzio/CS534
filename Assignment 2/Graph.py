@@ -171,11 +171,11 @@ def main():
         plt.title(f'Epsilon vs Time')
         plt.show()
 
-    # graph_initial_epsilon(5, .99)
+    # graph_initial_epsilon(1, .99)
     # graph_decay_rate(5, 1, "intermediate.txt")
-    # graph_part3_vs_part4(5)
+    graph_part3_vs_part4(1)
     # graph_epsilon_vs_time(5)
-    # graph_epsilons_mean_reward(5)
+    # graph_epsilons_mean_reward(1)
 
 
 if __name__ == "__main__":
