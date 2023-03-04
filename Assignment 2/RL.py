@@ -58,9 +58,12 @@ class RL:
         self.end_time = end_time
 
         start_time = time.time()
-        last_time = start_time
 
         count_episodes = 0
+
+        # better exploration for part 3/4
+        # decay_rate =
+        # self.step_size_parameter =
 
         while time.time() < end_time:
 
@@ -76,7 +79,6 @@ class RL:
                 self.get_mean_reward((time.time() - start_time), epsilon, count_episodes)
                 self.current_rewards = []
                 count_episodes = 0
-                last_time = time.time()
 
             while not terminal:
                 new_board, reward, terminal = current_gridworld.take_action(action, self.per_action_reward,
