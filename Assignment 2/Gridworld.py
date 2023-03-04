@@ -122,3 +122,6 @@ class Gridworld:
 
     def __getitem__(self, item):
         return self.gridworld[item]
+
+    def __len__(self):
+        return len(self.gridworld)

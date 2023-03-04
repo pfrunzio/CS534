@@ -38,7 +38,7 @@ class RL:
         random.seed(21)
 
         # start learning
-        return self._rl(epsilon, decay_rate)
+        return self._rl(epsilon, decay_rate, True)
 
     def graph_start(self, epsilon, decay_rate):
         print(
@@ -46,14 +46,14 @@ class RL:
         print("Initial World:")
         print(self.gridworld, '\n')
         random.seed(21)
-        return self._rl(epsilon, decay_rate)
+        return self._rl(epsilon, decay_rate, False)
 
     def get_mean_reward(self, new_time, epsilon, count_episodes):
         self.epsilons.append((new_time, epsilon))
         if len(self.current_rewards) != 0:
             self.mean_rewards.append((new_time, sum(self.current_rewards) / count_episodes))
 
-    def _rl(self, epsilon, decay_rate):
+    def _rl(self, epsilon, decay_rate, better_exploration):
         end_time = time.time() + self.runtime
         self.end_time = end_time
 
@@ -62,7 +62,10 @@ class RL:
         count_episodes = 0
 
         # better exploration for part 3/4
-        # self.step_size_parameter =
+        if better_exploration:
+            linear_area = math.sqrt(len(self.gridworld) * len(self.gridworld[0]))
+            decay_rate = 0.99 + 0.01 * pow(math.log(50 * linear_area) / (1 - 50 * linear_area) + 1, 3)
+            self.step_size_parameter = 0.1
 
         while time.time() < end_time:
 
@@ -97,12 +100,17 @@ class RL:
                 action = new_action
 
             # decay and time-based factors
-            epsilon *= decay_rate
-
-            # Stops exploring when the time left is less than 1% of the given time and less than 0.1 second
-            # TODO: This has a negligible effect on epsilon/exploration, replace with better metric?
             if self.time_based:
-                if ((end_time - time.time()) / self.runtime) < 0.1:
+                percent_used = 1 - (end_time - time.time()) / self.runtime
+                epsilon = max(pow(2, -10 * percent_used), 0)
+            else:
+                epsilon *= decay_rate
+
+            # Stops exploring when the time left is less than 1% of the given time and less than 0.25 seconds
+            # or if total time left is less than 0.05 seconds
+            if self.time_based:
+                time_left = end_time - time.time()
+                if ((time_left / self.runtime) < 0.01 and time_left < 0.25) or time_left < 0.05:
                     epsilon = 0
 
             # update count for graph data
