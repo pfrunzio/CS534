@@ -9,13 +9,17 @@ from Gridworld import Action, Value
 class RL:
     def __init__(self, gridworld, runtime, reward, transition_model, time_based):
         self.gridworld = gridworld
+        self.heatmap = deepcopy(gridworld)
+
+        # run settings
         self.runtime = runtime
         self.per_action_reward = reward
         self.transition_model = transition_model
         self.time_based = time_based
         self.future_reward_discount = 1  # gamma
         self.step_size_parameter = .1  # alpha
-        self.heatmap = deepcopy(gridworld)
+
+        # benchmarking data
         self.mean_rewards = []
         self.current_rewards = []
         self.epsilons = []
@@ -27,9 +31,12 @@ class RL:
             f'Performing RL in {self.runtime} seconds with {self.per_action_reward} reward per action and actions succeeding {self.transition_model * 100} percent of the time {"taking into account" if self.time_based else "ignoring"} remains.\n')
         print("Initial World:")
         print(self.gridworld, '\n')
+
         epsilon = 1
         decay_rate = 0.999
+
         random.seed(21)
+
         # start learning
         return self._rl(epsilon, decay_rate, True)
 
@@ -63,7 +70,9 @@ class RL:
 
             action = self._select_action(current_state, epsilon)
 
-            if (time.time() - last_time) >= .05:
+            # calculate graph data
+            # if (time.time() - last_time) >= .025:
+            if count_episodes > 100:
                 self.get_mean_reward((time.time() - start_time), epsilon, count_episodes)
                 self.current_rewards = []
                 count_episodes = 0
@@ -86,6 +95,7 @@ class RL:
                 current_state = new_state
                 action = new_action
 
+            # decay and time-based factors
             if time_decay:
                 epsilon *= decay_rate
 
@@ -95,7 +105,10 @@ class RL:
                 if ((end_time - time.time()) / self.runtime) < 0.1:
                     epsilon = 0
 
+            # update count for graph data
             count_episodes += 1
+
+        # print results
         policy = self._generate_policy()
         print("Policy:")
         print(policy, "\n")
