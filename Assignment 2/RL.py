@@ -98,7 +98,7 @@ class RL:
 
             # better exploration for part 3
             if better_exploration:
-                epsilon = pow(2, (-3.32 / (1000 * linear_area)) * count_episodes)
+                epsilon = pow(2, (-3.32 / (500 * linear_area)) * count_episodes)
             # better exploration for part 4
             if self.time_based:
                 percent_used = 1 - (end_time - time.time()) / self.runtime
