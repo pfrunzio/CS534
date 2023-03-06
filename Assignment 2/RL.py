@@ -48,16 +48,10 @@ class RL:
         random.seed(21)
         return self._rl(epsilon, decay_rate, False)
 
-    def get_mean_reward(self, new_time, epsilon, count_episodes):
-        self.epsilons.append((new_time, epsilon))
-        if len(self.current_rewards) != 0:
-            self.mean_rewards.append((new_time, sum(self.current_rewards) / count_episodes))
-
     def _rl(self, epsilon, decay_rate, better_exploration):
-        end_time = time.time() + self.runtime
-        self.end_time = end_time
-
         start_time = time.time()
+        end_time = start_time + self.runtime
+        self.end_time = end_time
 
         count_episodes = 0
 
@@ -72,10 +66,12 @@ class RL:
             action = self._select_action(current_state, epsilon)
 
             # calculate graph data
-            # if (time.time() - last_time) >= .025:
             if count_episodes % 100 == 0:
-                self.get_mean_reward((time.time() - start_time), epsilon, 100)
-                self.current_rewards = []
+                time_diff = self._calc_mean_reward(time.time() - start_time, epsilon)
+
+                # account for time spent calculating mean
+                start_time += time_diff
+                end_time += time_diff
 
             while not terminal:
                 new_board, reward, terminal = current_gridworld.take_action(action, self.per_action_reward,
@@ -125,6 +121,42 @@ class RL:
         print("Heatmap:")
         print(self.heatmap, "\n")
         return self.mean_rewards, self.epsilons
+
+    def _calc_mean_reward(self, new_time, epsilon):
+        start_time = time.time()
+        trial_count = 0
+        total_reward = 0
+
+        # average over 100 runs
+        while trial_count < 100:
+
+            terminal = False
+            current_gridworld = self.gridworld
+            current_state = current_gridworld.position
+
+            trial_reward = 0
+
+            while not terminal:
+                action = self._get_best_action(current_state)
+                new_board, reward, terminal = current_gridworld.take_action(action, self.per_action_reward,
+                                                                            self.transition_model)
+
+                trial_reward += reward
+                current_gridworld = new_board
+                current_state = current_gridworld.position
+
+                if trial_reward < -1:
+                    break
+
+            total_reward += trial_reward
+            trial_count += 1
+
+        # plot points
+        self.mean_rewards.append((new_time, total_reward / trial_count))
+        self.epsilons.append((new_time, epsilon))
+
+        # return the amount of time the calculation took
+        return time.time() - start_time
 
     def _select_action(self, state, epsilon):
         return self._epsilon_greedy(epsilon, state)

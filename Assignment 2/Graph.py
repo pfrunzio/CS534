@@ -174,7 +174,7 @@ def main():
     # graph_initial_epsilon(1, .99, "intermediate.txt")
     # graph_decay_rate(1, 1, "intermediate.txt")
     graph_part3_vs_part4(6, "large.txt")
-    # graph_epsilon_vs_time(3, "intermediate.txt")
+    # graph_epsilon_vs_time(0.5, "intermediate.txt")
     # graph_epsilons_mean_reward(1)
 
 
