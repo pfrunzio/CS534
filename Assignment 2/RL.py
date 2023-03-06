@@ -98,10 +98,13 @@ class RL:
             # better exploration for part 4
             if self.time_based:
                 percent_used = 1 - (end_time - time.time()) / self.runtime
-                if percent_used <= 0.8:
-                    epsilon = pow(2, -5 * percent_used)
-                else:
-                    epsilon = pow(2, -10 * percent_used)
+
+                epsilon = 1 - 0.8 * percent_used
+                if percent_used >= 0.7:
+                    self.step_size_parameter = 0.025
+                if percent_used >= 0.9:
+                    self.step_size_parameter = 0.01
+                    epsilon = 0
 
             # Stops exploring when the time left is less than 1% of the given time and less than 0.25 seconds
             # or if total time left is less than 0.05 seconds
@@ -145,7 +148,7 @@ class RL:
                 current_gridworld = new_board
                 current_state = current_gridworld.position
 
-                if trial_reward < -1:
+                if trial_reward < -5:
                     break
 
             total_reward += trial_reward

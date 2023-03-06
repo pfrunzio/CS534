@@ -26,26 +26,31 @@ def main():
         intermediate_gridworld2 = get_gridworld("intermediate.txt")
         intermediate_gridworld3 = get_gridworld("intermediate.txt")
         intermediate_gridworld4 = get_gridworld("intermediate.txt")
+        intermediate_gridworld5 = get_gridworld("intermediate.txt")
 
         driver1 = RL(intermediate_gridworld1, time, -0.04, .7, False)
         driver2 = RL(intermediate_gridworld2, time, -0.04, .7, False)
         driver3 = RL(intermediate_gridworld3, time, -0.04, .7, False)
         driver4 = RL(intermediate_gridworld4, time, -0.04, .7, False)
+        driver5 = RL(intermediate_gridworld5, time, -0.04, .7, False)
 
         epsilon1, epsilons1 = driver1.graph_start(.01, 1)
         epsilon2, epsilons2 = driver2.graph_start(.1, 1)
         epsilon3, epsilons3 = driver3.graph_start(.3, 1)
-        exploration, epsilons4 = driver4.start()
+        epsilon4, epsilons4 = driver4.graph_start(.5, 1)
+        exploration, epsilons4 = driver5.start()
 
         x1, y1 = zip(*epsilon1)
         x2, y2 = zip(*epsilon2)
         x3, y3 = zip(*epsilon3)
-        x4, y4 = zip(*exploration)
+        x4, y4 = zip(*epsilon4)
+        x5, y5 = zip(*exploration)
 
         plt.scatter(x1, y1, c='b', marker='x', label='epsilon=0.01')
         plt.scatter(x2, y2, c='r', marker='o', label='epsilon=0.1')
         plt.scatter(x3, y3, c='g', marker='^', label='epsilon=0.3')
-        plt.scatter(x4, y4, label='our method')
+        plt.scatter(x4, y4, c='y', marker='x', label='epsilon=0.5')
+        plt.scatter(x5, y5, label='our method')
 
         plt.legend(loc='upper left')
         plt.ylabel("Mean Reward")
@@ -171,11 +176,49 @@ def main():
         plt.title(f'Epsilon vs Time')
         plt.show()
 
+    def graph_step_size_mean_reward(time):
+        intermediate_gridworld1 = get_gridworld("intermediate.txt")
+        intermediate_gridworld2 = get_gridworld("intermediate.txt")
+        intermediate_gridworld3 = get_gridworld("intermediate.txt")
+        intermediate_gridworld4 = get_gridworld("intermediate.txt")
+        intermediate_gridworld5 = get_gridworld("intermediate.txt")
+
+        driver1 = RL(intermediate_gridworld1, time, -0.04, .7, False)
+        driver1.step_size_parameter = 0.05
+        driver2 = RL(intermediate_gridworld2, time, -0.04, .7, False)
+        driver2.step_size_parameter = 0.1
+        driver3 = RL(intermediate_gridworld3, time, -0.04, .7, False)
+        driver3.step_size_parameter = 0.2
+        driver4 = RL(intermediate_gridworld4, time, -0.04, .7, False)
+        driver4.step_size_parameter = 0.5
+
+        epsilon1, epsilons1 = driver1.graph_start(.3, 1)
+        epsilon2, epsilons2 = driver2.graph_start(.3, 1)
+        epsilon3, epsilons3 = driver3.graph_start(.3, 1)
+        epsilon4, epsilons4 = driver4.graph_start(.3, 1)
+
+        x1, y1 = zip(*epsilon1)
+        x2, y2 = zip(*epsilon2)
+        x3, y3 = zip(*epsilon3)
+        x4, y4 = zip(*epsilon4)
+
+        plt.scatter(x1, y1, c='b', marker='x', label='step_size=0.05')
+        plt.scatter(x2, y2, c='r', marker='o', label='step_size=0.1')
+        plt.scatter(x3, y3, c='g', marker='^', label='step_size=0.2')
+        plt.scatter(x4, y4, c='y', marker='x', label='step_size=0.5')
+
+        plt.legend(loc='upper left')
+        plt.ylabel("Mean Reward")
+        plt.xlabel("Time")
+        plt.title(f'Mean Reward vs Time')
+        plt.show()
+
     # graph_initial_epsilon(1, .99, "intermediate.txt")
     # graph_decay_rate(1, 1, "intermediate.txt")
-    graph_part3_vs_part4(6, "large.txt")
-    # graph_epsilon_vs_time(0.5, "intermediate.txt")
-    # graph_epsilons_mean_reward(1)
+    graph_part3_vs_part4(4, "medium.txt")
+    # graph_epsilon_vs_time(4, "large.txt")
+    # graph_epsilons_mean_reward(0.5)
+    # graph_step_size_mean_reward(0.5)
 
 
 if __name__ == "__main__":
