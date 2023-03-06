@@ -100,17 +100,9 @@ class RL:
                 percent_used = 1 - (end_time - time.time()) / self.runtime
 
                 epsilon = 1 - 0.8 * percent_used
-                if percent_used >= 0.7:
-                    self.step_size_parameter = 0.025
+                self.step_size_parameter = pow(2, -40 * percent_used) + 0.05
                 if percent_used >= 0.9:
                     self.step_size_parameter = 0.01
-                    epsilon = 0
-
-            # Stops exploring when the time left is less than 1% of the given time and less than 0.25 seconds
-            # or if total time left is less than 0.05 seconds
-            if self.time_based:
-                time_left = end_time - time.time()
-                if ((time_left / self.runtime) < 0.01 and time_left < 0.25) or time_left < 0.05:
                     epsilon = 0
 
             # update count for graph data
