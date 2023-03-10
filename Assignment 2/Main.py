@@ -30,13 +30,19 @@ def main(argv):
             board = pd.read_csv(directory, sep="	", header=None)
             start = (np.where(board == 'S')[0][0], np.where(board == 'S')[1][0])
             board = board\
-                .replace('+', Value.COOKIE)\
+                .replace("+", Value.COOKIE)\
                 .replace("-", Value.GLASS)\
                 .replace("X", Value.BARRIER)\
                 .replace("S", Value.EMPTY)\
-                .values.astype(int)
+                .values
 
-            gridworld = Gridworld(board, start)
+            for row in range(len(board)):
+                for col in range(len(board[0])):
+                    val = board[row][col]
+                    if isinstance(val, str) and val.isalpha():
+                        board[row][col] = -1 * ord(val)
+
+            gridworld = Gridworld(board.astype(int), start)
         except Exception as e:
             print(e, command_format)
             continue

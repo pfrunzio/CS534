@@ -23,6 +23,7 @@ class RL:
         self.mean_rewards = []
         self.current_rewards = []
         self.epsilons = []
+        self.graph = False
 
         self.q_table = dict()
 
@@ -37,14 +38,17 @@ class RL:
 
         random.seed(21)
 
+        self.graph = False
+
         # start learning
         return self._rl(epsilon, decay_rate, True)
 
-    def graph_start(self, epsilon, decay_rate):
+    def graph_start(self, epsilon, decay_rate, graph):
         print(
             f'Performing RL in {self.runtime} seconds with {self.per_action_reward} reward per action and actions succeeding {self.transition_model * 100} percent of the time {"taking into account" if self.time_based else "ignoring"} remains.\n')
         print("Initial World:")
         print(self.gridworld, '\n')
+        self.graph = graph
         random.seed(21)
         return self._rl(epsilon, decay_rate, False)
 
@@ -66,7 +70,7 @@ class RL:
             action = self._select_action(current_state, epsilon)
 
             # calculate graph data
-            if count_episodes % 100 == 0:
+            if self.graph and count_episodes % 100 == 0:
                 time_diff = self._calc_mean_reward(time.time() - start_time, epsilon)
 
                 # account for time spent calculating mean

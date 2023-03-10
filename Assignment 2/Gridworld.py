@@ -28,6 +28,7 @@ class Gridworld:
     def __init__(self, gridworld, position):
         self.gridworld = gridworld
         self.position = position
+        self.changes = []
 
     def take_action(self, action, move_reward, transition_model):
         action = action.value
@@ -68,10 +69,18 @@ class Gridworld:
         # eat cookie or glass
         if landed_on == Value.COOKIE:
             new_board[row][col] = Value.EMPTY
+            self.changes.append((row, col))
             reward += 2
         elif landed_on == Value.GLASS:
             new_board[row][col] = Value.EMPTY
+            self.changes.append((row, col))
             reward -= 2
+        # land on switch
+        elif ord('a') <= -landed_on <= ord('z'):
+            new_board[row][col] = Value.EMPTY
+            char = chr(-landed_on).upper()
+            new_board.replace(ord(char), Value.EMPTY)
+            self.changes.append((row, col))
         # reached terminal state
         elif landed_on != 0:
             terminal = True
@@ -83,7 +92,11 @@ class Gridworld:
         row = position[0]
         col = position[1]
         if 0 <= row < len(self.gridworld) and 0 <= col < len(self.gridworld[0]):
-            return self.gridworld[row][col] != Value.BARRIER
+            val = self.gridworld[row][col]
+            if ord('A') <= -val <= ord('Z'):
+                return False
+            return val != Value.BARRIER
+
         return False
 
     def __str__(self):
@@ -117,6 +130,8 @@ class Gridworld:
             return "<"
         if value == Value.RIGHT_ARROW:
             return ">"
+        if ord("A") <= -value <= ord("z"):
+            return chr(-value)
         
         return str(value)
 
@@ -125,3 +140,9 @@ class Gridworld:
 
     def __len__(self):
         return len(self.gridworld)
+
+    def replace(self, val, new_val):
+        for row in range(len(self.gridworld)):
+            for col in range(len(self.gridworld[0])):
+                if self.gridworld[row][col] == val:
+                    self.gridworld[row][col] = new_val
