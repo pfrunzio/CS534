@@ -65,7 +65,8 @@ class RL:
 
             terminal = False
             current_gridworld = self.gridworld
-            current_state = current_gridworld.position
+            position = current_gridworld.position
+            current_state = (position[0], position[1], tuple(current_gridworld.changes))
 
             action = self._select_action(current_state, epsilon)
 
@@ -84,7 +85,8 @@ class RL:
                 self.current_rewards.append(reward)
 
                 current_gridworld = new_board
-                new_state = current_gridworld.position
+                position = current_gridworld.position
+                new_state = (position[0], position[1], tuple(current_gridworld.changes))
 
                 new_action = self._select_action(new_state, epsilon)
 
@@ -131,7 +133,8 @@ class RL:
 
             terminal = False
             current_gridworld = self.gridworld
-            current_state = current_gridworld.position
+            position = current_gridworld.position
+            current_state = (position[0], position[1], tuple(current_gridworld.changes))
 
             trial_reward = 0
 
@@ -142,8 +145,8 @@ class RL:
 
                 trial_reward += reward
                 current_gridworld = new_board
-                current_state = current_gridworld.position
-
+                position = current_gridworld.position
+                current_state = (position[0], position[1], tuple(current_gridworld.changes))
                 if trial_reward < -5:
                     break
 
@@ -226,7 +229,7 @@ class RL:
 
         for row in range(len(self.gridworld.gridworld)):
             for col in range(len(self.gridworld.gridworld[0])):
-                state = (row, col)
+                state = (row, col, tuple([]))
 
                 if policy[row][col] == Value.EMPTY or policy[row][col] == Value.COOKIE or policy[row][
                     col] == Value.GLASS:

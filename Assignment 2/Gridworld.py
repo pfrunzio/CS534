@@ -61,6 +61,7 @@ class Gridworld:
 
         # now calculate reward and new board based on action
         new_board = Gridworld(deepcopy(self.gridworld), new_position)
+        new_board.changes = deepcopy(self.changes)
         reward = move_reward
         terminal = False
 
@@ -69,18 +70,18 @@ class Gridworld:
         # eat cookie or glass
         if landed_on == Value.COOKIE:
             new_board[row][col] = Value.EMPTY
-            self.changes.append((row, col))
+            new_board.changes.append((row, col))
             reward += 2
         elif landed_on == Value.GLASS:
             new_board[row][col] = Value.EMPTY
-            self.changes.append((row, col))
+            new_board.changes.append((row, col))
             reward -= 2
         # land on switch
         elif ord('a') <= -landed_on <= ord('z'):
             new_board[row][col] = Value.EMPTY
             char = chr(-landed_on).upper()
-            new_board.replace(ord(char), Value.EMPTY)
-            self.changes.append((row, col))
+            new_board.replace(-ord(char), Value.EMPTY)
+            new_board.changes.append((row, col))
         # reached terminal state
         elif landed_on != 0:
             terminal = True
