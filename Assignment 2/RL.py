@@ -115,12 +115,17 @@ class RL:
             count_episodes += 1
 
         # print results
+        self._calc_mean_reward(0, 0)
         policy = self._generate_policy()
+
         print("Policy:")
         print(policy, "\n")
 
         print("Heatmap:")
         print(self.heatmap, "\n")
+
+        print(f'Mean Reward {self.mean_rewards[-1][1]}\n')
+
         return self.mean_rewards, self.epsilons
 
     def _calc_mean_reward(self, new_time, epsilon):
