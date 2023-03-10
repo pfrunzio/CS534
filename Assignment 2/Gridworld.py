@@ -87,6 +87,8 @@ class Gridworld:
             terminal = True
             reward += landed_on
 
+        self.changes.sort()
+
         return new_board, reward, terminal
 
     def _is_legal_position(self, position):
