@@ -43,14 +43,14 @@ class RL:
         # start learning
         return self._rl(epsilon, decay_rate, True)
 
-    def graph_start(self, epsilon, decay_rate, graph):
+    def graph_start(self, epsilon, decay_rate, better_exploration):
         print(
             f'Performing RL in {self.runtime} seconds with {self.per_action_reward} reward per action and actions succeeding {self.transition_model * 100} percent of the time {"taking into account" if self.time_based else "ignoring"} remains.\n')
         print("Initial World:")
         print(self.gridworld, '\n')
-        self.graph = graph
+        self.graph = True
         random.seed(21)
-        return self._rl(epsilon, decay_rate, False)
+        return self._rl(epsilon, decay_rate, better_exploration)
 
     def _rl(self, epsilon, decay_rate, better_exploration):
         start_time = time.time()
@@ -152,7 +152,7 @@ class RL:
                 current_gridworld = new_board
                 position = current_gridworld.position
                 current_state = (position[0], position[1], tuple(current_gridworld.changes))
-                if trial_reward < -5:
+                if trial_reward < -1:
                     break
 
             total_reward += trial_reward

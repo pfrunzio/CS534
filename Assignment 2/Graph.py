@@ -13,13 +13,19 @@ def main():
         board = pd.read_csv(directory, sep="	", header=None)
         start = (np.where(board == 'S')[0][0], np.where(board == 'S')[1][0])
         board = board \
-            .replace('+', Value.COOKIE) \
+            .replace("+", Value.COOKIE) \
             .replace("-", Value.GLASS) \
             .replace("X", Value.BARRIER) \
             .replace("S", Value.EMPTY) \
-            .values.astype(int)
+            .values
 
-        return Gridworld(board, start)
+        for row in range(len(board)):
+            for col in range(len(board[0])):
+                val = board[row][col]
+                if isinstance(val, str) and val.isalpha():
+                    board[row][col] = -1 * ord(val)
+
+        return Gridworld(board.astype(int), start)
 
     def graph_epsilons_mean_reward(time):
         intermediate_gridworld1 = get_gridworld("intermediate.txt")
@@ -34,11 +40,11 @@ def main():
         driver4 = RL(intermediate_gridworld4, time, -0.04, .7, False)
         driver5 = RL(intermediate_gridworld5, time, -0.04, .7, False)
 
-        epsilon1, epsilons1 = driver1.graph_start(.01, 1)
-        epsilon2, epsilons2 = driver2.graph_start(.1, 1)
-        epsilon3, epsilons3 = driver3.graph_start(.3, 1)
-        epsilon4, epsilons4 = driver4.graph_start(.5, 1)
-        exploration, epsilons4 = driver5.start()
+        epsilon1, epsilons1 = driver1.graph_start(.01, 1, False)
+        epsilon2, epsilons2 = driver2.graph_start(.1, 1, False)
+        epsilon3, epsilons3 = driver3.graph_start(.3, 1, False)
+        epsilon4, epsilons4 = driver4.graph_start(.5, 1, False)
+        exploration, epsilons4 = driver5.graph_start(1, 0.999, True)
 
         x1, y1 = zip(*epsilon1)
         x2, y2 = zip(*epsilon2)
@@ -71,11 +77,11 @@ def main():
         driver4 = RL(intermediate_gridworld4, time, -0.04, .7, False)
         driver5 = RL(intermediate_gridworld5, time, -0.04, .7, False)
 
-        epsilon1, epsilons1 = driver1.graph_start(.1, decay_rate)
-        epsilon2, epsilons2 = driver2.graph_start(.3, decay_rate)
-        epsilon3, epsilons3 = driver3.graph_start(.5, decay_rate)
-        epsilon4, epsilons4 = driver4.graph_start(.7, decay_rate)
-        epsilon5, epsilons5 = driver5.graph_start(1, decay_rate)
+        epsilon1, epsilons1 = driver1.graph_start(.1, decay_rate, False)
+        epsilon2, epsilons2 = driver2.graph_start(.3, decay_rate, False)
+        epsilon3, epsilons3 = driver3.graph_start(.5, decay_rate, False)
+        epsilon4, epsilons4 = driver4.graph_start(.7, decay_rate, False)
+        epsilon5, epsilons5 = driver5.graph_start(1, decay_rate, False)
 
         x1, y1 = zip(*epsilon1)
         x2, y2 = zip(*epsilon2)
@@ -108,11 +114,11 @@ def main():
         driver4 = RL(intermediate_gridworld4, time, -0.04, .7, False)
         driver5 = RL(intermediate_gridworld5, time, -0.04, .7, False)
 
-        decay1, epsilons1 = driver1.graph_start(epsilon, .999)
-        decay2, epsilons2 = driver2.graph_start(epsilon, .99)
-        decay3, epsilons3 = driver3.graph_start(epsilon, .9)
-        decay4, epsilons4 = driver4.graph_start(epsilon, .75)
-        decay5, epsilons5 = driver5.graph_start(epsilon, .5)
+        decay1, epsilons1 = driver1.graph_start(epsilon, .999, False)
+        decay2, epsilons2 = driver2.graph_start(epsilon, .99, False)
+        decay3, epsilons3 = driver3.graph_start(epsilon, .9, False)
+        decay4, epsilons4 = driver4.graph_start(epsilon, .75, False)
+        decay5, epsilons5 = driver5.graph_start(epsilon, .5, False)
 
         x1, y1 = zip(*decay1)
         x2, y2 = zip(*decay2)
@@ -139,8 +145,8 @@ def main():
         no_time = RL(intermediate_gridworld1_1, time, -0.04, .7, False)
         time = RL(intermediate_gridworld2_1, time, -0.04, .7, True)
 
-        no_time_data, epsilons1 = no_time.start()
-        time_data, epsilons2 = time.start()
+        no_time_data, epsilons1 = no_time.graph_start(1, 0.999, True)
+        time_data, epsilons2 = time.graph_start(1, 0.999, True)
 
         no_time_x, no_time_y = zip(*no_time_data)
         time_x, time_y = zip(*time_data)
@@ -161,8 +167,8 @@ def main():
         no_time = RL(intermediate_gridworld1_1, time, -0.04, .7, False)
         time = RL(intermediate_gridworld2_1, time, -0.04, .7, True)
 
-        no_time_data, epsilons1 = no_time.start()
-        time_data, epsilons2 = time.start()
+        no_time_data, epsilons1 = no_time.graph_start(1, 0.999, True)
+        time_data, epsilons2 = time.graph_start(1, 0.999, True)
 
         x1, y1 = zip(*epsilons1)
         x2, y2 = zip(*epsilons2)
@@ -192,10 +198,10 @@ def main():
         driver4 = RL(intermediate_gridworld4, time, -0.04, .7, False)
         driver4.step_size_parameter = 0.5
 
-        epsilon1, epsilons1 = driver1.graph_start(.3, 1)
-        epsilon2, epsilons2 = driver2.graph_start(.3, 1)
-        epsilon3, epsilons3 = driver3.graph_start(.3, 1)
-        epsilon4, epsilons4 = driver4.graph_start(.3, 1)
+        epsilon1, epsilons1 = driver1.graph_start(.3, 1, False)
+        epsilon2, epsilons2 = driver2.graph_start(.3, 1, False)
+        epsilon3, epsilons3 = driver3.graph_start(.3, 1, False)
+        epsilon4, epsilons4 = driver4.graph_start(.3, 1, False)
 
         x1, y1 = zip(*epsilon1)
         x2, y2 = zip(*epsilon2)
@@ -213,12 +219,31 @@ def main():
         plt.title(f'Mean Reward vs Time')
         plt.show()
 
+    def graph_extra_credit(time, board):
+        intermediate_gridworld1_1 = get_gridworld(board)
+        intermediate_gridworld2_1 = get_gridworld(board)
+
+        time = RL(intermediate_gridworld2_1, time, -0.04, 1, True)
+
+        time_data, epsilons2 = time.graph_start(1, 0.999, True)
+
+        time_x, time_y = zip(*time_data)
+
+        plt.scatter(time_x, time_y, c='r', marker='o', label='Time')
+
+        plt.legend(loc='upper left')
+        plt.ylabel("Mean Reward")
+        plt.xlabel("Time")
+        plt.title(f'Mean Reward vs Time')
+        plt.show()
+
     # graph_initial_epsilon(1, .99, "intermediate.txt")
     # graph_decay_rate(1, 1, "intermediate.txt")
-    graph_part3_vs_part4(0.5, "intermediate.txt")
-    # graph_epsilon_vs_time(4, "large.txt")
+    # graph_part3_vs_part4(3, "intermediate.txt")
+    # graph_epsilon_vs_time(3, "intermediate.txt")
     # graph_epsilons_mean_reward(0.5)
     # graph_step_size_mean_reward(0.5)
+    graph_extra_credit(6, "extra_credit.txt")
 
 
 if __name__ == "__main__":
