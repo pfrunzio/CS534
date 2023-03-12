@@ -65,8 +65,7 @@ class RL:
 
             terminal = False
             current_gridworld = self.gridworld
-            position = current_gridworld.position
-            current_state = (position[0], position[1], tuple(current_gridworld.changes))
+            current_state = current_gridworld.get_state()
 
             action = self._select_action(current_state, epsilon)
 
@@ -134,12 +133,11 @@ class RL:
         total_reward = 0
 
         # average over 100 runs
-        while trial_count < 100:
+        while trial_count < 20:
 
             terminal = False
             current_gridworld = self.gridworld
-            position = current_gridworld.position
-            current_state = (position[0], position[1], tuple(current_gridworld.changes))
+            current_state = current_gridworld.get_state()
 
             trial_reward = 0
 

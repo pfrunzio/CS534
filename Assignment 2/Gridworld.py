@@ -32,6 +32,9 @@ class Gridworld:
         # list of (row, col) pairs of cookies/switches the agent has landed on
         self.changes = []
 
+    def get_state(self):
+        return self.position[0], self.position[1], tuple(sorted(self.changes))
+
     def take_action(self, action, move_reward, transition_model):
         action = action.value
         rand = random.random()
@@ -88,9 +91,6 @@ class Gridworld:
         elif landed_on != 0:
             terminal = True
             reward += landed_on
-
-        # sort so hashing it doesn't change based on order
-        self.changes.sort()
 
         return new_board, reward, terminal
 
