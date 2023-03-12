@@ -65,7 +65,7 @@ class RL:
 
             terminal = False
             current_gridworld = self.gridworld
-            current_state = current_gridworld.get_state()
+            current_state = current_gridworld
 
             action = self._select_action(current_state, epsilon)
 
@@ -85,7 +85,7 @@ class RL:
 
                 current_gridworld = new_board
                 position = current_gridworld.position
-                new_state = (position[0], position[1], tuple(current_gridworld.changes))
+                new_state = new_board
 
                 new_action = self._select_action(new_state, epsilon)
 
@@ -137,7 +137,7 @@ class RL:
 
             terminal = False
             current_gridworld = self.gridworld
-            current_state = current_gridworld.get_state()
+            current_state = current_gridworld
 
             trial_reward = 0
 
@@ -149,7 +149,7 @@ class RL:
                 trial_reward += reward
                 current_gridworld = new_board
                 position = current_gridworld.position
-                current_state = (position[0], position[1], tuple(current_gridworld.changes))
+                current_state = current_gridworld
                 if trial_reward < -1:
                     break
 
@@ -174,7 +174,7 @@ class RL:
         new_utility = self._q_learning_utility(state, action, reward, new_state, self.step_size_parameter)
         # new_utility = self._sarsa_utility(state, action, reward, new_state, new_action, self.step_size_parameter)
 
-        self.q_table[(state, action)] = new_utility
+        self.q_table[(state.get_state(), action)] = new_utility
 
     def _q_learning_utility(self, state, action, reward, new_state, step_size_parameter):
 
@@ -220,7 +220,7 @@ class RL:
 
     def _get_utility(self, state, action):
         try:
-            return self.q_table[(state, action)]
+            return self.q_table[(state.get_state(), action)]
         except KeyError as e:
             return 0
 
@@ -232,7 +232,8 @@ class RL:
 
         for row in range(len(self.gridworld.gridworld)):
             for col in range(len(self.gridworld.gridworld[0])):
-                state = (row, col, tuple([]))
+                state = deepcopy(self.gridworld)
+                state.position = (row, col)
 
                 if policy[row][col] == Value.EMPTY or policy[row][col] == Value.COOKIE or policy[row][
                     col] == Value.GLASS:
@@ -251,6 +252,6 @@ class RL:
         return policy
 
     def _update_heatmap(self, state):
-        row = state[0]
-        col = state[1]
+        row = state.get_state()[0]
+        col = state.get_state()[1]
         self.heatmap[row][col] += 1

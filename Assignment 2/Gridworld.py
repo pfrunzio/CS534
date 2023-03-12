@@ -35,6 +35,14 @@ class Gridworld:
     def get_state(self):
         return self.position[0], self.position[1], tuple(sorted(self.changes))
 
+    def get_backup_states(self):
+        backups = []
+        changes = deepcopy(self.changes)
+        while len(changes) > 0:
+            changes.pop()
+            backups.append((self.position[0], self.position[1], tuple(sorted(self.changes))))
+        return backups
+
     def take_action(self, action, move_reward, transition_model):
         action = action.value
         rand = random.random()
