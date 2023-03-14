@@ -4,6 +4,7 @@ import time
 from copy import deepcopy
 from threading import Timer
 from Gridworld import Action, Value
+from itertools import chain, combinations
 
 
 class RL:
@@ -58,6 +59,7 @@ class RL:
         self.end_time = end_time
 
         count_episodes = 0
+        all_changes = set()
 
         linear_area = math.sqrt(len(self.gridworld) * len(self.gridworld[0]))
 
@@ -84,8 +86,7 @@ class RL:
                 self.current_rewards.append(reward)
 
                 current_gridworld = new_board
-                position = current_gridworld.position
-                new_state = (position[0], position[1], tuple(current_gridworld.changes))
+                new_state = current_gridworld.get_state()
 
                 new_action = self._select_action(new_state, epsilon)
 
@@ -113,12 +114,14 @@ class RL:
             # update count for graph data
             count_episodes += 1
 
+            # add changes to create policies later
+            for change in current_gridworld.changes:
+                all_changes.add(change)
+
         # print results
         self._calc_mean_reward(0, 0)
-        policy = self._generate_policy()
 
-        print("Policy:")
-        print(policy, "\n")
+        self._print_policies(all_changes)
 
         print("Heatmap:")
         print(self.heatmap, "\n")
@@ -126,6 +129,26 @@ class RL:
         print(f'Mean Reward {self.mean_rewards[-1][1]}\n')
 
         return self.mean_rewards, self.epsilons
+
+    def _print_policies(self, changes):
+        print("hi")
+        for subset in self._powerset(changes):
+            change = sorted(subset)
+            policy = self._generate_policy(tuple(change))
+
+            readable_changes = list(map(self._render_point, change))
+
+            print(f'Policy: {readable_changes}')
+            print("Policy:")
+            print(policy, "\n")
+
+    def _render_point(self, position):
+        row = position[0]
+        col = position[1]
+        return row, col, self.gridworld._value_str(self.gridworld[row][col])
+    def _powerset(self, iterable):
+        s = list(iterable)
+        return chain.from_iterable(combinations(s, r) for r in range(len(s) + 1))
 
     def _calc_mean_reward(self, new_time, epsilon):
         start_time = time.time()
@@ -148,8 +171,7 @@ class RL:
 
                 trial_reward += reward
                 current_gridworld = new_board
-                position = current_gridworld.position
-                current_state = (position[0], position[1], tuple(current_gridworld.changes))
+                current_state = current_gridworld.get_state()
                 if trial_reward < -1:
                     break
 
@@ -227,15 +249,16 @@ class RL:
     def _explore(self):
         return random.choice(list(Action))
 
-    def _generate_policy(self):
-        policy = self.gridworld
+    def _generate_policy(self, changes):
+        policy = deepcopy(self.gridworld)
+        for change in changes:
+            policy = policy.move_to(change, 0)[0]
 
-        for row in range(len(self.gridworld.gridworld)):
-            for col in range(len(self.gridworld.gridworld[0])):
-                state = (row, col, tuple([]))
+        for row in range(len(policy.gridworld)):
+            for col in range(len(policy.gridworld[0])):
+                state = (row, col, changes)
 
-                if policy[row][col] == Value.EMPTY or policy[row][col] == Value.COOKIE or policy[row][
-                    col] == Value.GLASS:
+                if policy[row][col] == Value.EMPTY:
 
                     best_action = self._get_best_action(state)
 

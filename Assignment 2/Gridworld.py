@@ -61,9 +61,9 @@ class Gridworld:
         while not self._is_legal_position(new_position):
             new_position = new_positions.get()
 
-        return self._move_to(new_position, move_reward)
+        return self.move_to(new_position, move_reward)
 
-    def _move_to(self, new_position, move_reward):
+    def move_to(self, new_position, move_reward):
 
         row = new_position[0]
         col = new_position[1]

@@ -243,7 +243,7 @@ def main():
     # graph_epsilon_vs_time(3, "intermediate.txt")
     # graph_epsilons_mean_reward(0.5)
     # graph_step_size_mean_reward(0.5)
-    graph_extra_credit(6, "extra_credit.txt")
+    graph_extra_credit(2, "example.txt")
 
 
 if __name__ == "__main__":
