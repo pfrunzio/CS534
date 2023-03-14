@@ -61,10 +61,14 @@ class Gridworld:
         while not self._is_legal_position(new_position):
             new_position = new_positions.get()
 
+        return self._move_to(new_position, move_reward)
+
+    def _move_to(self, new_position, move_reward):
+
         row = new_position[0]
         col = new_position[1]
 
-        # now calculate reward and new board based on action
+        # calculate reward and new board based on action
         new_board = Gridworld(deepcopy(self.gridworld), new_position)
         new_board.changes = deepcopy(self.changes)
         reward = move_reward
