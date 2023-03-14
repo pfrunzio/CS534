@@ -10,7 +10,7 @@ from itertools import chain, combinations
 class RL:
     def __init__(self, gridworld, runtime, reward, transition_model, time_based):
         self.gridworld = gridworld
-        self.heatmap = deepcopy(gridworld)
+        self.heatmaps = dict()
 
         # run settings
         self.runtime = runtime
@@ -123,24 +123,25 @@ class RL:
 
         self._print_policies(all_changes)
 
-        print("Heatmap:")
-        print(self.heatmap, "\n")
+        # print("Heatmap:")
+        # print(self.heatmap, "\n")
 
         print(f'Mean Reward {self.mean_rewards[-1][1]}\n')
 
         return self.mean_rewards, self.epsilons
 
     def _print_policies(self, changes):
-        print("hi")
         for subset in self._powerset(changes):
             change = sorted(subset)
             policy = self._generate_policy(tuple(change))
 
             readable_changes = list(map(self._render_point, change))
 
-            print(f'Policy: {readable_changes}')
-            print("Policy:")
-            print(policy, "\n")
+            print(f'Policy for State: {readable_changes}')
+            print(policy)
+
+            print("Heatmap:")
+            print(self.heatmaps[tuple(change)], "\n")
 
     def _render_point(self, position):
         row = position[0]
@@ -276,4 +277,13 @@ class RL:
     def _update_heatmap(self, state):
         row = state[0]
         col = state[1]
-        self.heatmap[row][col] += 1
+        changes = state[2]
+
+        # set heatmap if one does not exist
+        if changes not in self.heatmaps:
+            new_heatmap = deepcopy(self.gridworld)
+            for change in changes:
+                new_heatmap = new_heatmap.move_to(change, 0)[0]
+            self.heatmaps[changes] = new_heatmap
+
+        self.heatmaps[changes][row][col] += 1
