@@ -220,10 +220,9 @@ def main():
         plt.show()
 
     def graph_extra_credit(time, board):
-        intermediate_gridworld1_1 = get_gridworld(board)
         intermediate_gridworld2_1 = get_gridworld(board)
 
-        time = RL(intermediate_gridworld2_1, time, -0.04, 1, True)
+        time = RL(intermediate_gridworld2_1, time, -0.04, 0.7, True)
 
         time_data, epsilons2 = time.graph_start(1, 0.999, True)
 
@@ -243,7 +242,7 @@ def main():
     # graph_epsilon_vs_time(3, "intermediate.txt")
     # graph_epsilons_mean_reward(0.5)
     # graph_step_size_mean_reward(0.5)
-    graph_extra_credit(2, "example.txt")
+    graph_extra_credit(0.5, "shortcut.txt")
 
 
 if __name__ == "__main__":
