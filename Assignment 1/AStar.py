@@ -1,12 +1,7 @@
 from Algorithm import Algorithm
-from Algorithm import HEURISTIC_SLIDE
 from queue import PriorityQueue
-from HillClimbing import HillClimbing
-from Board import Board
 import time
 
-
-GREEDY_HEURISTIC_DEPTH = 15
 
 class AStar(Algorithm):
 
@@ -41,7 +36,7 @@ class AStar(Algorithm):
                 self.elapsed_time = time.time() - start_time
                 return current
 
-            for board, value, direction in current.neighbors():
+            for board in current.neighbors():
                 if board not in visited or board.cost < visited[board]:
                     visited[current] = current.cost
                     priority = board.cost + self._calculate_heuristic(board)
@@ -75,79 +70,3 @@ class AStar(Algorithm):
         print("Elapsed Time: {}".format(self.elapsed_time))
 
         print()
-
-    def _calculate_heuristic(self, board):
-        return self.calculate_heuristic(board)\
-            if (self.heuristic_type != "greedy") \
-            else self._calculate_greedy_heuristic(board)
-
-    # Part 3 Code:
-    def _calculate_greedy_heuristic(self, board):
-        copy = Board(board.board)
-        local_min = self._hill_climbing(copy)
-        if type(local_min) is not Board:
-            return local_min
-
-        cost = local_min.cost
-        rest_cost = self._greedy_a_star(Board(local_min.board), 10, GREEDY_HEURISTIC_DEPTH)
-
-        # caching values
-        current = local_min
-        while current.previous is not None:
-            self.greedy_cache[current] = local_min.cost - current.cost + rest_cost
-            current = current.previous
-
-        return cost + rest_cost
-
-    def _hill_climbing(self, board):
-
-        if board in self.greedy_cache:
-            return self.greedy_cache[board]
-
-        current = board
-        while True:
-            neighbors = [n[0] for n in current.neighbors()]
-            neighbors.sort(key=lambda n: self.calculate_heuristic(n), reverse=False)
-            best = neighbors[0]
-            if self.calculate_heuristic(best) >= self.calculate_heuristic(current):
-                return current
-            current = best
-
-    def _greedy_a_star(self, board, weight, node_limit):
-
-        if board in self.greedy_cache:
-            return self.greedy_cache[board]
-
-        fringe = PriorityQueue()
-        fringe.put((self.calculate_heuristic(board), board))
-        visited = dict()
-
-        nodes_explored = 0
-
-        highest = None
-        highest_cost = 0
-
-        while not fringe.empty():
-            current = fringe.get()[1]
-            nodes_explored += 1
-
-            if current.cost >= highest_cost:
-                highest_cost = current.cost
-                highest = current
-
-            if nodes_explored >= node_limit or self.calculate_heuristic(current) == 0:
-                final = highest
-                heuristic = self.calculate_heuristic(final)
-
-                # caching values
-                while current.previous is not None:
-                    self.greedy_cache[current] = final.cost - current.cost + 1.5 * heuristic
-                    current = current.previous
-
-                return final.cost + 1.5 * heuristic
-
-            for board, value, direction in current.neighbors():
-                if board not in visited or board.cost < visited[board]:
-                    visited[current] = current.cost
-                    priority = board.cost + (weight * self.calculate_heuristic(board))
-                    fringe.put((priority, board))

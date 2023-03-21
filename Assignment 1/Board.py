@@ -1,7 +1,6 @@
 import numpy as np
-
-from Algorithm import Neighbor, Direction
-from copy import copy, deepcopy
+from Algorithm import Direction
+from copy import deepcopy
 
 
 class Board:
@@ -27,7 +26,7 @@ class Board:
             if self._is_legal(row + r, col + c) and self.board[row + r][col + c] != 0:
                 new_board = self._swap(deepcopy(self.board), row + r, col + c, row, col)
                 board = Board(new_board, self, self.cost + new_board[row][col], Direction((-r, -c)), new_board[row][col])
-                neighbors.append(Neighbor(board, new_board[row][col], Direction((-r, -c))))
+                neighbors.append(board)
         return neighbors
 
     def _swap(self, board, row1, col1, row2, col2):

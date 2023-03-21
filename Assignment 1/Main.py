@@ -1,19 +1,16 @@
 import pandas as pd
 import sys
 
-import HillClimbing
 import Algorithm
 import AStar
 from Board import Board
 
 COMMAND_ARGUMENT_ASTAR = "npuzzle"
-COMMAND_ARGUMENT_HILLCLIMB = "greedy"
 
 
 def main(argv):
 
-    command_format = "\ncommands: [npuzzle] [board file] [sliding/teleporting/greedy] [true/false]" + ""\
-                     "\n          [greedy] [board file] [time]\n"
+    command_format = "\ncommands: [npuzzle] [board file] [sliding/teleporting/greedy] [true/false]"
 
     print(command_format)
 
@@ -41,16 +38,7 @@ def main(argv):
 
         driver = None
 
-        if algorithm == COMMAND_ARGUMENT_HILLCLIMB:
-
-            try:
-                seconds = int(argv[2])
-            except:
-                print("Exception: Invalid seconds for command argument 3", command_format)
-                continue
-            driver = HillClimbing.HillClimbing(board, False, seconds)
-
-        elif algorithm == COMMAND_ARGUMENT_ASTAR:
+        if algorithm == COMMAND_ARGUMENT_ASTAR:
 
             heuristic = argv[2]
             bool = argv[3].lower()
@@ -62,7 +50,7 @@ def main(argv):
             elif bool == "false":
                 weight = False
 
-            if not heuristic.lower() in [Algorithm.HEURISTIC_TELEPORT, Algorithm.HEURISTIC_SLIDE, Algorithm.HEURISTIC_GREEDY]:
+            if not heuristic.lower() in [Algorithm.HEURISTIC_TELEPORT, Algorithm.HEURISTIC_SLIDE]:
                 print("Unknown heuristic for command argument 2", command_format)
                 continue
 
