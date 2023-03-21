@@ -30,13 +30,11 @@ class Board:
         return neighbors
 
     def _swap(self, board, row1, col1, row2, col2):
-        store = board[row1][col1]
-        board[row1][col1] = board[row2][col2]
-        board[row2][col2] = store
+        board[row1][col1], board[row2][col2] = board[row2][col2], board[row1][col1]
         return board
 
     def _is_legal(self, row, col):
-        return row >= 0 and col >= 0 and row < len(self.board) and col < len(self.board)
+        return 0 <= row < len(self.board) and 0 <= col < len(self.board)
 
     def __hash__(self):
         string = ""
