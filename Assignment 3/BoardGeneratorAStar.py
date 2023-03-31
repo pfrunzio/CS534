@@ -16,8 +16,7 @@ class BoardGeneratorAStar(Algorithm):
         if(end is None):
             raise Exception("Unable to solve within time limit")
         else:
-            path = self._create_path_string(end)
-            return len(path)
+            return end.cost
 
     def search(self):
 
@@ -26,7 +25,7 @@ class BoardGeneratorAStar(Algorithm):
         visited = dict()
 
         start_time = time.time()
-        while not fringe.empty() and (time.time() - start_time < 600):
+        while not fringe.empty() and (time.time() - start_time < 240):
             current = fringe.get()[1]
             self.nodes_expanded += 1
 
