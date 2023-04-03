@@ -1,6 +1,7 @@
 import numpy as np
 from Algorithm import Direction
 from copy import deepcopy
+from AStar import AStar
 
 
 class Board:
@@ -63,3 +64,47 @@ class Board:
 
     def __str__(self):
         return '\n'.join(map(str, self.board))
+    
+    def heuristic(board):
+        b = AStar(board, "sliding", "true")
+        return b._calculate_heuristic(board)
+
+    def linear_conflict(board):
+        n = len(board)
+        conflict_count = 0
+        for i in range(n):
+            for j in range(n):
+                if board[i][j] != 0 and (i * n + j + 1) % n != 0:
+                    for k in range(j + 1, n):
+                        if board[i][j] > board[i][k] and (i * n + k + 1) % n != 0:
+                            conflict_count += 1
+                    for k in range(i + 1, n):
+                        if board[i][j] > board[k][j] and (k * n + j + 1) % n != 0:
+                            conflict_count += 1
+        return 2 * conflict_count
+    
+    def misplaced_tiles(board):
+        n = len(board)
+        count = 0
+        for i in range(n):
+            for j in range(n):
+                if board[i][j] != 0 and board[i][j] != i * n + j + 1:
+                    count += 1
+        return count
+    
+    def permutation_inversion(board):
+        # Flatten the board into a 1D array
+        flattened_board = [num for row in board for num in row]
+        
+        # Calculate the permutation inversion count
+        inversions = 0
+        for i in range(len(flattened_board)):
+            if flattened_board[i] == 0: # Ignore blank tile
+                continue
+            for j in range(i+1, len(flattened_board)):
+                if flattened_board[j] == 0: # Ignore blank tile
+                    continue
+                if flattened_board[i] > flattened_board[j]:
+                    inversions += 1
+                    
+        return inversions

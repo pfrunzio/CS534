@@ -5,17 +5,21 @@ import torch.nn.functional as F
 import torch.optim as optim
 from sklearn.metrics import r2_score
 import numpy as np
-from AStar import AStar
 
 class Net(nn.Module):
-    def __init__(self, input_size, hidden_size, output_size):
+    def __init__(self):
         super(Net, self).__init__()
-        self.fc1 = nn.Linear(input_size, hidden_size)
-        self.fc2 = nn.Linear(hidden_size, output_size)
+        self.fc1 = nn.Linear(input_size, hidden_size1)
+        self.fc2 = nn.Linear(hidden_size1, hidden_size2)
+        self.fc3 = nn.Linear(hidden_size2, hidden_size3)
+        self.fc4 = nn.Linear(hidden_size3, output_size)
+        self.dropout = nn.Dropout(.5)
     
     def forward(self, x):
         x = F.relu(self.fc1(x))
-        x = self.fc2(x)
+        x = F.relu(self.fc2(x))
+        x = F.relu(self.fc3(x))
+        x = self.fc4(x)
         return x
 
 def train(model, optimizer, loss_fn, x_train, y_train, num_epochs):
@@ -35,43 +39,59 @@ def r2_accuracy(model, x_test, y_test):
         r2_acc = r2_score(y_test.numpy(), y_pred.numpy())
     return r2_acc
 
-boards = extract_board_from_file("./Data/ListOfBoards3x3.csv")
+boards = extract_board_from_file("./Data/CorrectListOfBoards3x3.csv")
+    
+npuzzle_features = []
+npuzzle_cost = []
+    
+def generate_features(board):
 
-def heuristic(board):
-    b = AStar(board, "sliding", "true")
-    return b._calculate_heuristic(board)
+    manhattan = board.heuristic()
+
+    linear_conflict = board.linear_conflict()
+
+    misplaced_tiles = board.misplaced_tiles()
     
-    
-x_train_array = []
-y_train_array = []
+    permutation_inversion = board.permutation_inversion()
+
+    features = np.concatenate([np.array([manhattan, linear_conflict, misplaced_tiles, permutation_inversion]), 
+                               np.array([])])
+
+    return features
 
 for board in boards:
-    x_train_array.append([heuristic(board).astype(np.float32)])
-    y_train_array.append([board.cost.astype(np.float32)])
+    npuzzle_cost.append([board.cost.astype(np.float32)])
+    features = generate_features(board)
+    npuzzle_features.append(features)
 
-x_train = torch.tensor(x_train_array)
-y_train = torch.tensor(y_train_array)
+x_train = torch.tensor(np.array(npuzzle_features[:10000]), dtype=torch.float32)
+y_train = torch.tensor(np.array(npuzzle_cost[:10000]), dtype=torch.float32)
 
-x_test = torch.tensor(x_train_array)
-y_test = torch.tensor(y_train_array)
+x_test = torch.tensor(np.array(npuzzle_features[10000:]), dtype=torch.float32)
+y_test = torch.tensor(np.array(npuzzle_cost[10000:]), dtype=torch.float32)
 
 # Define the hyperparameters
-input_size = x_train_array.__len__()
-hidden_size = 1
-output_size = y_train_array.__len__()
-learning_rate = 0.1
-num_epochs = 3
+input_size = 4 #num of features
+hidden_size1 = 10
+hidden_size2 = 20
+hidden_size3 = 40
+output_size = 1 #path cost
+learning_rate = .1
+num_epochs = 200
 
-model = Net(input_size, hidden_size, output_size)
+model = Net()
+
+# define the loss function
 loss_fn = nn.MSELoss()
-optimizer = optim.SGD(model.parameters(), lr=learning_rate)
+
+optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 
 train(model, optimizer, loss_fn, x_train, y_train, num_epochs)
 
 PATH = "./Data/net.pth"
 torch.save(model.state_dict(), PATH)
 
-# model = Net(input_size, hidden_size, output_size)
+# model = Net()
 # model.load_state_dict(torch.load(PATH))
 
 print(r2_accuracy(model, x_test, y_test))
