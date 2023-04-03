@@ -11,6 +11,9 @@ class AStar(Algorithm):
         self.elapsed_time = None
         self.greedy_cache = dict()
 
+        # model = Net(input_size, hidden_size, output_size)
+        # model.load_state_dict(torch.load(PATH))
+
     def start(self):
         print(f'Performing A* search with {self.heuristic_type} heuristic {"with" if self.weighted else "without"} weight')
         print("Initial Board:")

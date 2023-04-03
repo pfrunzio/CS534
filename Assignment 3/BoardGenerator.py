@@ -5,7 +5,6 @@ import csv
 import numpy as np
 import pandas as pd
 
-import AStar
 import Algorithm
 import BoardGeneratorAStar
 from Board import Board
@@ -70,6 +69,7 @@ def generate_board_by_moves(board_size, max_num_moves):
 
 
 def get_final_board(board_csv, board_size, num_moves):
+
     board = Board(np.reshape(board_csv, (board_size, board_size)))
     board = make_random_moves(board, num_moves)
 
@@ -90,6 +90,8 @@ def make_random_moves(board, move_count):
     for i in range(move_count):
         neighbors = current_board.neighbors()
         current_board = neighbors[random.randint(0, len(neighbors) - 1)]
+
+    current_board.cost = 0
 
     return current_board
 

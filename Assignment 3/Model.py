@@ -1,4 +1,4 @@
-from BoardGenerator import extract_board_from_file 
+from BoardGenerator import extract_board_from_file
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -30,8 +30,16 @@ def train(model, optimizer, loss_fn, x_train, y_train, num_epochs):
         loss.backward()
         optimizer.step()
         
-        if (epoch+1) % 1 == 0:
-            print('Epoch [{}/{}], Loss: {:.4f}'.format(epoch+1, num_epochs, loss.item()))
+        if (epoch + 1) % 100 == 0:
+            print('Epoch [{}/{}], Loss: {:.4f}'.format(epoch + 1, num_epochs, loss.item()))
+            # sum = 0
+            # count = 0
+            # for i in range(0, len(y_pred)):
+            #     sum += abs(y_pred[i].detach().numpy()[0] - y_train[i].detach().numpy()[0])
+            #     count += 1
+            #
+            # print(sum / count)
+
 
 def r2_accuracy(model, x_test, y_test):
     with torch.no_grad():
@@ -83,7 +91,6 @@ model = Net()
 
 # define the loss function
 loss_fn = nn.MSELoss()
-
 optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 
 train(model, optimizer, loss_fn, x_train, y_train, num_epochs)
