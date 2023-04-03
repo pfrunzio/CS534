@@ -119,7 +119,7 @@ class Algorithm(ABC):
         return front_heuristic, back_heuristic
 
     def _calculate_ml_heuristic(self, board):
-        x = np.array(board.features()).astype(np.float32)
+        x = np.array(self.features(board)).astype(np.float32)
 
         if x[0] == 0:
             return 0
@@ -143,4 +143,16 @@ class Algorithm(ABC):
 
     # all features
     def features(self, board):
-        return [self._heuristic(board), self._blanks(board)]
+        # calculate heuristic here to save having to recreate the solution
+        # every time the heuristic is calculated
+        manhattan = min(self._calculate_slide_heuristic(board))
+
+        linear_conflict = board.linear_conflict()
+
+        misplaced_tiles = board.misplaced_tiles()
+
+        permutation_inversion = board.permutation_inversion()
+
+        features = np.concatenate([np.array([manhattan, linear_conflict, misplaced_tiles, permutation_inversion]),
+                                   np.array([])])
+        return features
