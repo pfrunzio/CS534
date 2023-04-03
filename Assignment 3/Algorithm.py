@@ -1,12 +1,13 @@
 from abc import abstractmethod, ABC
 from enum import Enum
+import numpy as np
 
 import torch
-# from Model import PATH
-# from Model import input_size
-# from Model import hidden_size
-# from Model import output_size
-# from Model import Net
+from Net import Net
+from Net import PATH
+from Net import input_size
+from Net import hidden_size
+from Net import output_size
 
 HEURISTIC_TELEPORT = "teleporting"
 HEURISTIC_SLIDE = "sliding"
@@ -51,8 +52,8 @@ class Algorithm(ABC):
         self.weighted = weighted
         self.goal_state_front_blanks, self.goal_state_back_blanks = self.goal_state(self.board)
 
-        # self.model = Net(input_size, hidden_size, output_size)
-        # self.model.load_state_dict(torch.load(PATH))
+        self.model = Net(input_size, hidden_size, output_size)
+        self.model.load_state_dict(torch.load(PATH))
 
     # Driver method for algorithms
     @abstractmethod
@@ -87,7 +88,7 @@ class Algorithm(ABC):
         elif self.heuristic_type == HEURISTIC_SLIDE:
             return min(self._calculate_slide_heuristic(board))
         elif self.heuristic_type == HEURISTIC_ML:
-            return min(self._calculate_ml_heuristic(board))
+            return self._calculate_ml_heuristic(board)
         else:
             return min(self._calculate_slide_heuristic(board))
 
@@ -122,8 +123,28 @@ class Algorithm(ABC):
         return front_heuristic, back_heuristic
 
     def _calculate_ml_heuristic(self, board):
-        return self.model(board.features())
+        x = np.array(board.features()).astype(np.float32)
+
+        if x[0] == 0:
+            return 0
+
+        return self.model(torch.tensor(x))
 
     def _manhattan_distance_to_goal(self, location, value, front):
         location_2 = self.goal_state_front_blanks[value] if front else self.goal_state_back_blanks[value]
         return abs(location[0] - location_2[0]) + abs(location[1] - location_2[1])
+
+    def _heuristic(self, board):
+        return self._calculate_heuristic(board)
+
+    def _blanks(self, board):
+        count = 0
+        for row in board:
+            for val in row:
+                if val == 0:
+                    count += 1
+        return count
+
+    # all features
+    def features(self, board):
+        return [self._heuristic(board), self._blanks(board)]

@@ -5,20 +5,13 @@ import torch.nn.functional as F
 import torch.optim as optim
 from sklearn.metrics import r2_score
 import numpy as np
+from AStar import AStar
 
-
-class Net(nn.Module):
-    def __init__(self, input_size, hidden_size, output_size):
-        super(Net, self).__init__()
-        self.fc1 = nn.Linear(input_size, hidden_size)
-        self.fc2 = nn.Linear(hidden_size, output_size)
-        # self.fc1 = nn.Linear(input_size, output_size)
-    
-    def forward(self, x):
-        x = F.relu(self.fc1(x))
-        x = self.fc2(x)
-        # x = F.relu(self.fc1(x))
-        return x
+from Net import Net
+from Net import PATH
+from Net import input_size
+from Net import hidden_size
+from Net import output_size
 
 
 def train(model, optimizer, loss_fn, x_train, y_train, num_epochs):
@@ -57,11 +50,13 @@ x_test_array = []
 y_test_array = []
 
 for board in boards[0:14999]:
-    x_train_array.append(board.features())
+    a = AStar(board, "sliding", "true")
+    x_train_array.append(a.features(board))
     y_train_array.append([board.cost.astype(np.float32)])
 
 for board in boards[15000:19999]:
-    x_test_array.append(board.features())
+    a = AStar(board, "sliding", "true")
+    x_test_array.append(a.features(board))
     y_test_array.append([board.cost.astype(np.float32)])
 
 x_train = torch.tensor(np.array(x_train_array).astype(np.float32))
@@ -71,23 +66,15 @@ x_test = torch.tensor(np.array(x_test_array).astype(np.float32))
 y_test = torch.tensor(y_test_array)
 
 # define hyper parameters
-input_size = 2
-hidden_size = 5
-output_size = 1
 learning_rate = 0.1
 num_epochs = 1000
 
 model = Net(input_size, hidden_size, output_size)
 loss_fn = nn.MSELoss()
-# optimizer = optim.SGD(model.parameters(), lr=learning_rate)
-# optimizer = optim.Adagrad(model.parameters(), lr=learning_rate)
 optimizer = optim.Adam(model.parameters(), lr=learning_rate)
-# optimizer = optim.Adadelta(model.parameters(), lr=learning_rate)
-# optimizer = optim.Adamax(model.parameters(), lr=learning_rate)
 
 train(model, optimizer, loss_fn, x_train, y_train, num_epochs)
 
-PATH = "./Data/net.pth"
 torch.save(model.state_dict(), PATH)
 
 # model = Net(input_size, hidden_size, output_size)
