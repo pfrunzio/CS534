@@ -153,6 +153,8 @@ class Algorithm(ABC):
 
         permutation_inversion = board.permutation_inversion()
 
-        features = np.concatenate([np.array([manhattan, linear_conflict, misplaced_tiles, permutation_inversion]),
+        size = len(board)
+
+        features = np.concatenate([np.array([manhattan, linear_conflict, misplaced_tiles, permutation_inversion, size]),
                                    np.array([])])
         return features
