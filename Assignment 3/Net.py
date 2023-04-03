@@ -14,7 +14,9 @@ num_epochs = 200
 
 PATH = "./Data/net.pth"
 
+
 class Net(nn.Module):
+
     def __init__(self):
         super(Net, self).__init__()
         self.fc1 = nn.Linear(input_size, hidden_size1)
