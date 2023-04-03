@@ -3,11 +3,7 @@ from enum import Enum
 import numpy as np
 
 import torch
-from Net import Net
-from Net import PATH
-from Net import input_size
-from Net import hidden_size
-from Net import output_size
+from Net import Net, PATH
 
 HEURISTIC_TELEPORT = "teleporting"
 HEURISTIC_SLIDE = "sliding"
@@ -52,7 +48,7 @@ class Algorithm(ABC):
         self.weighted = weighted
         self.goal_state_front_blanks, self.goal_state_back_blanks = self.goal_state(self.board)
 
-        self.model = Net(input_size, hidden_size, output_size)
+        self.model = Net()
         self.model.load_state_dict(torch.load(PATH))
 
     # Driver method for algorithms
