@@ -5,7 +5,6 @@ import csv
 import numpy as np
 import pandas as pd
 
-import AStar
 import Algorithm
 import BoardGeneratorAStar
 from Board import Board

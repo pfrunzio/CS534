@@ -1,6 +1,7 @@
 import numpy as np
 from Algorithm import Direction
 from copy import deepcopy
+from AStar import AStar
 
 
 class Board:
@@ -63,3 +64,21 @@ class Board:
 
     def __str__(self):
         return '\n'.join(map(str, self.board))
+
+    # individual features
+    def heuristic(self):
+        b = AStar(self, "sliding", "true")
+        return b._calculate_heuristic(self)
+
+    def blanks(self):
+        count = 0
+        for row in self.board:
+            for val in row:
+                if val == 0:
+                    count += 1
+        return count
+
+    # all features
+    def features(self):
+        return [self.heuristic(), self.blanks()]
+

@@ -1,6 +1,13 @@
 from abc import abstractmethod, ABC
 from enum import Enum
 
+import torch
+# from Model import PATH
+# from Model import input_size
+# from Model import hidden_size
+# from Model import output_size
+# from Model import Net
+
 HEURISTIC_TELEPORT = "teleporting"
 HEURISTIC_SLIDE = "sliding"
 HEURISTIC_ML = "ml"
@@ -43,6 +50,9 @@ class Algorithm(ABC):
         self.heuristic_type = heuristic
         self.weighted = weighted
         self.goal_state_front_blanks, self.goal_state_back_blanks = self.goal_state(self.board)
+
+        # self.model = Net(input_size, hidden_size, output_size)
+        # self.model.load_state_dict(torch.load(PATH))
 
     # Driver method for algorithms
     @abstractmethod
@@ -112,7 +122,7 @@ class Algorithm(ABC):
         return front_heuristic, back_heuristic
 
     def _calculate_ml_heuristic(self, board):
-        raise Exception("Implement ML heuristic")
+        return self.model(board.features())
 
     def _manhattan_distance_to_goal(self, location, value, front):
         location_2 = self.goal_state_front_blanks[value] if front else self.goal_state_back_blanks[value]
