@@ -23,9 +23,9 @@ boards3_40 = extract_board_from_file("./Data/ListOfBoards3x3_40_Max_Moves.csv")
 boards4_20 = extract_board_from_file("./Data/ListOfBoards4x4_20_Max_Moves.csv")
 boards4_60 = extract_board_from_file("./Data/ListOfBoards4x4_60_Max_Moves.csv")
 boards5_20 = extract_board_from_file("./Data/ListOfBoards5x5_20_Max_Moves.csv")
-boards4_80 = extract_board_from_file("./Data/ListOfBoards5x5_80_Max_Moves.csv")
+boards5_80 = extract_board_from_file("./Data/ListOfBoards5x5_80_Max_Moves.csv")
 
-all_boards = boards3_40 + boards4_20 + boards4_60 + boards5_20 + boards4_80
+all_boards = boards3_40 + boards4_20 + boards4_60 + boards5_20 + boards5_80
 random.shuffle(all_boards)
 
 train_percent = 0.8
