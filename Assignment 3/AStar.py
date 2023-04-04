@@ -19,6 +19,7 @@ class AStar(Algorithm):
         end = self.search()
 
         self._print_path(end)
+        return end.cost
 
     def search(self):
 
@@ -66,7 +67,7 @@ class AStar(Algorithm):
         print("Length: {}".format(len(path)))
 
         print("Nodes Expanded: {}".format(self.nodes_expanded))
-        print("Estimated Branching Factor: {}".format(pow(self.nodes_expanded, 1 / len(path))))
+        print("Estimated Branching Factor: {}".format(pow(self.nodes_expanded, 1 / max(len(path), 1))))
         print("Elapsed Time: {}".format(self.elapsed_time))
 
         print()
