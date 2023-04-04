@@ -5,9 +5,7 @@ from sklearn.metrics import r2_score
 
 # Define the hyperparameters
 input_size = 5  # num of features
-hidden_size1 = 10
-hidden_size2 = 20
-hidden_size3 = 40
+hidden_size = 10
 output_size = 1  # path cost
 learning_rate = .1
 num_epochs = 200
@@ -19,16 +17,13 @@ class Net(nn.Module):
 
     def __init__(self):
         super(Net, self).__init__()
-        self.fc1 = nn.Linear(input_size, hidden_size1)
-        self.fc2 = nn.Linear(hidden_size1, hidden_size2)
-        self.fc3 = nn.Linear(hidden_size2, hidden_size3)
-        self.fc4 = nn.Linear(hidden_size3, output_size)
-        self.dropout = nn.Dropout(.5)
+        self.fc1 = nn.Linear(input_size, hidden_size)
+        self.fc4 = nn.Linear(hidden_size, output_size)
     
     def forward(self, x):
         x = F.relu(self.fc1(x))
-        x = F.relu(self.fc2(x))
-        x = F.relu(self.fc3(x))
+        # x = F.relu(self.fc2(x))
+        # x = F.relu(self.fc3(x))
         x = self.fc4(x)
         return x
     
