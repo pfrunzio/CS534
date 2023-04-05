@@ -4,8 +4,13 @@ import torch.optim as optim
 import numpy as np
 import random
 from sklearn.metrics import r2_score
+import time
+from AStar import AStar
 
 from Net import Net, PATH, num_epochs, loss_fn, learning_rate, r2_accuracy
+
+TRAIN = False
+
 
 def train(model, optimizer, loss_fn, x_train, y_train, num_epochs):
     for epoch in range(num_epochs):
@@ -26,6 +31,9 @@ boards5_20 = extract_board_from_file("./Data/ListOfBoards5x5_20_Max_Moves.csv")
 boards5_80 = extract_board_from_file("./Data/ListOfBoards5x5_80_Max_Moves.csv")
 
 all_boards = boards3_40 + boards4_20 + boards4_60 + boards5_20 + boards5_80
+
+# fix random seed so the model is consistent between runs
+random.seed(99)
 random.shuffle(all_boards)
 
 train_percent = 0.8
@@ -33,7 +41,8 @@ cut = int(len(all_boards) * train_percent)
     
 npuzzle_features = []
 npuzzle_cost = []
-    
+
+
 def generate_features(board):
 
     manhattan = board.heuristic()
@@ -50,6 +59,7 @@ def generate_features(board):
                                          permutation_inversion, size])])
 
     return features, manhattan, misplaced_tiles
+
 
 npuzzle_features = []
 npuzzle_cost = []
@@ -74,9 +84,48 @@ model = Net()
 
 optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 
-train(model, optimizer, loss_fn, x_train, y_train, num_epochs)
+if TRAIN:
+    train(model, optimizer, loss_fn, x_train, y_train, num_epochs)
+else:
+    model.load_state_dict(torch.load(PATH))
 
 torch.save(model.state_dict(), PATH)
+
+
+# Calculate heuristic speeds
+
+# total_ml = 0
+# for board in all_boards:
+#     a = AStar(board, "ml", "true")
+#     start = time.time()
+#     a._calculate_heuristic(board)
+#     total_ml += time.time() - start
+#
+# print(f'ML Speed:\t{total_ml / len(all_boards)}')
+#
+# total_sliding = 0
+# for board in all_boards:
+#     a = AStar(board, "sliding", "true")
+#     start = time.time()
+#     a._calculate_heuristic(board)
+#     total_sliding += time.time() - start
+#
+# print(f'Sliding Speed:\t{total_sliding / len(all_boards)}')
+
+
+# generate average cost difference data
+
+# cut = 500
+# diff = 0
+# for board in all_boards[:cut]:
+#     a = AStar(board, "sliding", "true")
+#     b = AStar(board, "ml", "true")
+#     diff += b.start() - a.start()
+#
+# print(f'Average Diff: {diff / cut}')
+
+
+# generate model
 
 print("Training: " + str(r2_accuracy(model, x_train, y_train)))
 print("Testing: " + str(r2_accuracy(model, x_test, y_test)))

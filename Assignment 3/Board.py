@@ -77,10 +77,10 @@ class Board:
                 if board[i][j] != 0 and (i * n + j + 1) % n != 0:
                     for k in range(j + 1, n):
                         if board[i][j] > board[i][k] and (i * n + k + 1) % n != 0:
-                            conflict_count += 1
+                            conflict_count += board[i][j]
                     for k in range(i + 1, n):
                         if board[i][j] > board[k][j] and (k * n + j + 1) % n != 0:
-                            conflict_count += 1
+                            conflict_count += board[i][j]
         return 2 * conflict_count
     
     def misplaced_tiles(board):
@@ -89,7 +89,7 @@ class Board:
         for i in range(n):
             for j in range(n):
                 if board[i][j] != 0 and board[i][j] != i * n + j + 1:
-                    count += 1
+                    count += board[i][j]
         return count
     
     def permutation_inversion(board):
@@ -99,12 +99,12 @@ class Board:
         # Calculate the permutation inversion count
         inversions = 0
         for i in range(len(flattened_board)):
-            if flattened_board[i] == 0: # Ignore blank tile
+            if flattened_board[i] == 0:  # Ignore blank tile
                 continue
             for j in range(i+1, len(flattened_board)):
-                if flattened_board[j] == 0: # Ignore blank tile
+                if flattened_board[j] == 0:  # Ignore blank tile
                     continue
                 if flattened_board[i] > flattened_board[j]:
-                    inversions += 1
+                    inversions += flattened_board[i]
                     
         return inversions
