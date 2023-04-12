@@ -238,11 +238,11 @@ def main():
 
     # graph_initial_epsilon(1, .99, "intermediate.txt")
     # graph_decay_rate(1, 1, "intermediate.txt")
-    # graph_part3_vs_part4(3, "intermediate.txt")
-    # graph_epsilon_vs_time(3, "intermediate.txt")
+    graph_part3_vs_part4(3, "extra_credit.txt")
+    # graph_epsilon_vs_time(3, "medium.txt")
     # graph_epsilons_mean_reward(0.5)
     # graph_step_size_mean_reward(0.5)
-    graph_extra_credit(0.5, "shortcut.txt")
+    # graph_extra_credit(0.5, "shortcut.txt")
 
 
 if __name__ == "__main__":

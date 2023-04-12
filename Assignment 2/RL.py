@@ -1,6 +1,7 @@
 import math
 import random
 import time
+import numpy as np
 from copy import deepcopy
 from threading import Timer
 from Gridworld import Action, Value
@@ -55,10 +56,12 @@ class RL:
 
     def _rl(self, epsilon, decay_rate, better_exploration):
         start_time = time.time()
+        last_time = start_time
         end_time = start_time + self.runtime
         self.end_time = end_time
 
         count_episodes = 0
+        total_episodes = 0
         all_changes = set()
 
         linear_area = math.sqrt(len(self.gridworld) * len(self.gridworld[0]))
@@ -71,13 +74,20 @@ class RL:
 
             action = self._select_action(current_state, epsilon)
 
-            # calculate graph data
-            if self.graph and count_episodes % 100 == 0:
-                time_diff = self._calc_mean_reward(time.time() - start_time, epsilon)
+            # calculate correct graph data
+            if (time.time() - last_time) >= .05:
+                self.get_mean_reward((time.time() - start_time), epsilon, count_episodes)
+                self.current_rewards = []
+                count_episodes = 0
+                last_time = time.time()
 
-                # account for time spent calculating mean
-                start_time += time_diff
-                end_time += time_diff
+            # calculate graph data
+            # if self.graph and count_episodes % 100 == 0:
+            #     time_diff = self._calc_mean_reward(time.time() - start_time, epsilon)
+            #
+            #     # account for time spent calculating mean
+            #     start_time += time_diff
+            #     end_time += time_diff
 
             while not terminal:
                 new_board, reward, terminal = current_gridworld.take_action(action, self.per_action_reward,
@@ -100,33 +110,34 @@ class RL:
 
             # better exploration for part 3
             if better_exploration:
-                epsilon = pow(2, (-3.32 / (500 * linear_area)) * count_episodes)
+                # epsilon = max(1 - total_episodes / (50 * linear_area), 0.01)
+                epsilon = pow(2, (-3.32 / (500 * linear_area)) * total_episodes)
+
             # better exploration for part 4
             if self.time_based:
                 percent_used = 1 - (end_time - time.time()) / self.runtime
 
-                epsilon = 1 - 0.8 * percent_used
+                epsilon = 1 - 3 * percent_used
                 self.step_size_parameter = pow(2, -40 * percent_used) + 0.05
-                if percent_used >= 0.9:
+                if percent_used >= 0.2:
                     self.step_size_parameter = 0.01
                     epsilon = 0
 
             # update count for graph data
             count_episodes += 1
+            total_episodes += 1
 
             # add changes to create policies later
             for change in current_gridworld.changes:
                 all_changes.add(change)
 
         # print results
-        self._calc_mean_reward(0, 0)
-
         self._print_policies(all_changes)
 
         # print("Heatmap:")
         # print(self.heatmap, "\n")
 
-        print(f'Mean Reward {self.mean_rewards[-1][1]}\n')
+        print(f'Mean Reward {np.mean([x[1] for x in self.mean_rewards])}\n')
 
         return self.mean_rewards, self.epsilons
 
@@ -147,9 +158,15 @@ class RL:
         row = position[0]
         col = position[1]
         return row, col, self.gridworld._value_str(self.gridworld[row][col])
+
     def _powerset(self, iterable):
         s = list(iterable)
         return chain.from_iterable(combinations(s, r) for r in range(len(s) + 1))
+
+    def get_mean_reward(self, new_time, epsilon, count_episodes):
+        self.epsilons.append((new_time, epsilon))
+        if len(self.current_rewards) != 0:
+            self.mean_rewards.append((new_time, sum(self.current_rewards) / count_episodes))
 
     def _calc_mean_reward(self, new_time, epsilon):
         start_time = time.time()
