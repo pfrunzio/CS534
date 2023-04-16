@@ -1,0 +1,6 @@
+B	M	M	M	M	M	-
+-	-	M	M	M	F	S
+W	W	-	M	F	F	-
+W	W	B	-	-	-	W
+W	F	M	M	M	M	M
+M	M	M	M	M	M	M
