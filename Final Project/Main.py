@@ -2,14 +2,19 @@ import pandas as pd
 import numpy as np
 import sys
 
+from Genetic import Genetic
+from GeneticSlice import GeneticSlice
 from Gridworld import Gridworld
 from Gridworld import TileValue
+
 from Gridworld import Action
 
+PLAYER_MODE = "player"
+GENETIC_MODE = "genetic"
+GENETIC_SLICE_MODE = "sgenetic"
 
 def main(argv):
-
-    command_format = "\nCommands: [gridworld file] [player mode (0 for off, 1 for on)]\n"
+    command_format = f'\nCommands: [gridworld file] [{PLAYER_MODE}/{GENETIC_MODE}/{GENETIC_SLICE_MODE}]\n'
     print(command_format)
 
     argv = input("Enter arguments: ").split()
@@ -17,15 +22,19 @@ def main(argv):
         print("Incorrect number of command line arguments")
         exit()
 
-    player_mode = False
-    if argv[1] == "1":
-        player_mode = True
+    file_name = argv[0]
+    mode = argv[1]
 
-    gridworld = get_gridworld(argv[0])
+    gridworld = get_gridworld(file_name)
 
     # Lets you play the game yourself, might be useful for debugging purposes
-    if player_mode:
+    if mode == PLAYER_MODE:
         _run_player_mode(gridworld)
+
+    elif mode == GENETIC_MODE:
+        Genetic(gridworld).run()
+    elif mode == GENETIC_SLICE_MODE:
+        GeneticSlice(gridworld).run()
 
 
 def get_gridworld(file_name):
@@ -69,7 +78,6 @@ def _run_player_mode(gridworld):
 
 
 def _get_player_action(gridworld):
-
     print(gridworld.__str__())
     while True:
         player_action = input("Please enter an integer to select an action:\n" +
