@@ -4,9 +4,9 @@ import torch.nn.functional as F
 from sklearn.metrics import r2_score
 
 # Define the hyperparameters
-input_size = 5  # num of features
-hidden_size = 10
-output_size = 1  # path cost
+input_size = 38  # num of features
+hidden_size = 15
+output_size = 7
 learning_rate = .1
 num_epochs = 200
 
