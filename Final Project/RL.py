@@ -23,9 +23,6 @@ class RL:
         print("Initial World:")
         print(self.gridworld, '\n')
 
-        epsilon = 1
-        decay_rate = 0.999
-
         random.seed(21)
 
         # start learning
@@ -74,11 +71,6 @@ class RL:
         # print results
         print(f'Mean reward: {self._calc_mean_reward()}')
         print("done")
-
-    def _render_point(self, position):
-        row = position[0]
-        col = position[1]
-        return row, col, self.gridworld._value_str(self.gridworld[row][col])
 
     def _select_action(self, state, epsilon):
         return self._epsilon_greedy(epsilon, state)
@@ -149,7 +141,7 @@ class RL:
         total_reward = 0
 
         # average over 100 runs
-        while trial_count < 20:
+        while trial_count < 100:
 
             terminal = False
             current_gridworld = self.gridworld
@@ -171,7 +163,6 @@ class RL:
             total_reward += trial_reward
             trial_count += 1
 
-        # return the amount of time the calculation took
         return total_reward / trial_count
 
 
