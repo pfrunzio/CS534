@@ -24,3 +24,7 @@ class Net(nn.Module):
         x = F.relu(self.fc1(x))
         x = self.fc2(x)
         return x
+
+
+# use linear loss
+loss_fn = nn.L1Loss()

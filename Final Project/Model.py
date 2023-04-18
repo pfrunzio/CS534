@@ -1,15 +1,19 @@
 from Gridworld import Gridworld, Action
 from copy import deepcopy
-from Net import Net, PATH, num_epochs, learning_rate
+from Net import Net, PATH, num_epochs, learning_rate, loss_fn
 import torch
 import torch.optim as optim
 import random
+from Main import get_gridworld
+import numpy as np
 
 
 class Agent:
-    def __init__(self):
+    def __init__(self, gridworld):
+        self.gridworld = gridworld
+
         self.gamma = .99
-        self.epsilon = 1
+        self.epsilon = 0.5
         self.policy_net = Net()
         self.target_net = Net()
         
@@ -17,7 +21,11 @@ class Agent:
         
     def update(self, batch_size):
         self.optimizer.zero_grad()
-        loss = 0  # change this to evaluate loss based on how long the agent survives
+
+        score = torch.tensor(np.array([self.evaluate(self.policy_net)]), dtype=torch.float32)
+        best_score = torch.tensor(np.array([100000]), dtype=torch.float32)
+
+        loss = loss_fn(score, best_score)
         loss.backward()
         self.optimizer.step()
 
@@ -36,14 +44,22 @@ class Agent:
                 _, action = q_values.max(1)
                 return action.item()
 
+    def evaluate(self, model):
+        new_gridworld = Gridworld(deepcopy(self.gridworld), self.gridworld.pos)
 
-def evaluate(self, model):
+        while not new_gridworld.is_terminal:
+            features = new_gridworld.features()
+            input = torch.tensor(np.array(features), dtype=torch.float32)
+            action = new_gridworld.pick_ml_action(model(input))
 
-    new_gridworld = Gridworld(deepcopy(self.gridworld), self.gridworld.pos)
+            new_gridworld = new_gridworld.take_action(action)
 
-    while not new_gridworld.is_terminal:
-        features = new_gridworld.features()
-        action = new_gridworld.pick_ml_action(model(features))
-        new_gridworld = new_gridworld.take_action(action)
+        return new_gridworld.turn
 
-    return new_gridworld.turn
+
+gridworld = get_gridworld("mountain_pass.txt")
+
+agent = Agent(gridworld)
+
+agent.update(100)
+
