@@ -20,16 +20,18 @@ class Agent:
         self.optimizer = optim.Adam(self.policy_net.parameters(), lr=learning_rate)
         
     def update(self, batch_size):
-        self.optimizer.zero_grad()
+        for epoch in range(num_epochs):
+            self.optimizer.zero_grad()
 
-        score = torch.tensor(np.array([self.evaluate(self.policy_net)]), dtype=torch.float32)
-        best_score = torch.tensor(np.array([100000]), dtype=torch.float32)
+            score = torch.tensor(np.array([self.evaluate(self.policy_net)]), dtype=torch.float32, requires_grad=True)
+            best_score = torch.tensor(np.array([100000]), dtype=torch.float32)
 
-        loss = loss_fn(score, best_score)
-        loss.backward()
-        self.optimizer.step()
+            loss = loss_fn(score, best_score)
+            loss.backward()
+            self.optimizer.step()
 
-        print('Loss: {:.4f}'.format(loss.item()))
+            if (epoch + 1) % 10 == 0:
+                print(f'Epoch: {epoch + 1} Loss: {loss.item():.4f}')
 
     def update_target(self):
         self.target_net.load_state_dict(self.policy_net.state_dict())

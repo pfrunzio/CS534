@@ -8,7 +8,7 @@ input_size = 38  # num of features
 hidden_size = 15
 output_size = 7
 learning_rate = .1
-num_epochs = 200
+num_epochs = 1000
 
 PATH = "./Data/net.pth"
 
