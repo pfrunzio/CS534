@@ -69,6 +69,32 @@ class Gridworld:
 
         self.changes = []
 
+    def features(self):
+        # Features:
+        #  - health
+        #  - hydration
+        #  - has water
+        #  - has food
+        #  - has boar
+        #  - turn number
+        #  - position
+        #  - past 15 changes
+
+        array = [self.health, self.hydration, self.inventory == Inventory.WATER,
+                 self.inventory == Inventory.FOOD, self.inventory == Inventory.BOAR_MEAT,
+                 self.turn, self.pos[0], self.pos[1]]
+
+        # append list of changes, only most recent 15
+        for i in range(15):
+            if i < len(self.changes):
+                array.append(self.changes[len(self.changes) - i][0])
+                array.append(self.changes[len(self.changes) - i][1])
+            else:
+                array.append(-1)
+                array.append(-1)
+
+        return array
+
     def get_state(self):
         return self.pos[0], self.pos[1], self.health, self.hydration, self.inventory, self.turn, \
                tuple(sorted(self.changes))
