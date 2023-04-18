@@ -69,6 +69,22 @@ class Gridworld:
 
         self.changes = []
 
+    def pick_ml_action(self, output):
+        actions_map = {0: Action.UP, 1: Action.DOWN, 2: Action.Left, 3: Action.RIGHT, 4: Action.USE_TILE,
+                       5: Action.PICK_UP_ITEM, 6: Action.USE_INVENTORY}
+
+        while True:
+            index = index(max(output))
+            action = actions_map[index]
+            if self._is_legal_action(action):
+                return action
+            else:
+                output.remove(index)
+
+    def _is_legal_action(self, action):
+        # TODO: check if an action is legal first
+        return True
+
     def features(self):
         # Features:
         #  - health
