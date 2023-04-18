@@ -7,11 +7,15 @@ from GeneticSlice import GeneticSlice
 from Gridworld import Gridworld
 from Gridworld import TileValue
 
+from RL import RL
+
 from Gridworld import Action
 
 PLAYER_MODE = "player"
 GENETIC_MODE = "genetic"
 GENETIC_SLICE_MODE = "sgenetic"
+Q_TABLE = "qtable"
+
 
 def main(argv):
     command_format = f'\nCommands: [gridworld file] [{PLAYER_MODE}/{GENETIC_MODE}/{GENETIC_SLICE_MODE}]\n'
@@ -30,11 +34,13 @@ def main(argv):
     # Lets you play the game yourself, might be useful for debugging purposes
     if mode == PLAYER_MODE:
         _run_player_mode(gridworld)
-
     elif mode == GENETIC_MODE:
         Genetic(gridworld).run()
     elif mode == GENETIC_SLICE_MODE:
         GeneticSlice(gridworld).run()
+    elif mode == Q_TABLE:
+        RL(gridworld, 15).start()
+
 
 
 def get_gridworld(file_name):

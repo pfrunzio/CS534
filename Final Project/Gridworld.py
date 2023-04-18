@@ -257,7 +257,7 @@ class Gridworld:
             string = string.rstrip()
             string += "\n"
         string.rstrip()
-        string += "Agent is on tile (" + np.str(self.pos[0]) + ", " + np.str(self.pos[1]) + ")\n"
+        string += f'Agent is on tile ({self.pos[0]},  {self.pos[1]})\n'
         string += "Health: " + self.health.__str__() + "\n"
         string += "Hydration: " + self.hydration.__str__() + "\n"
         string += "Inventory: " + self.inventory.name.__str__() + "\n"
