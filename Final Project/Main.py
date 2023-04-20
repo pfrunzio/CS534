@@ -39,7 +39,7 @@ def main(argv):
     elif mode == GENETIC_SLICE_MODE:
         GeneticSlice(gridworld).run()
     elif mode == Q_TABLE:
-        RL(gridworld, 15).start()
+        RL(gridworld, 10).start()
 
 
 

@@ -39,7 +39,7 @@ class RL:
 
             terminal = False
             current_gridworld = self.gridworld
-            current_state = current_gridworld.get_state()
+            current_state = current_gridworld.get_q_table_state()
 
             action = self._select_action(current_state, epsilon)
 
@@ -50,7 +50,7 @@ class RL:
                 terminal = new_board.is_terminal
 
                 current_gridworld = new_board
-                new_state = current_gridworld.get_state()
+                new_state = current_gridworld.get_q_table_state()
 
                 new_action = self._select_action(new_state, epsilon)
 
@@ -145,7 +145,7 @@ class RL:
 
             terminal = False
             current_gridworld = self.gridworld
-            current_state = current_gridworld.get_state()
+            current_state = current_gridworld.get_q_table_state()
 
             trial_reward = 0
 
@@ -158,7 +158,7 @@ class RL:
 
                 trial_reward += reward
                 current_gridworld = new_board
-                current_state = current_gridworld.get_state()
+                current_state = current_gridworld.get_q_table_state()
 
             total_reward += trial_reward
             trial_count += 1

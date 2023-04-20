@@ -57,8 +57,8 @@ class Gridworld:
         self.is_terminal = False
 
         # Feel free to change these values
-        self.food_reward = 8
-        self.hydration_reward = 7
+        self.food_reward = 25
+        self.hydration_reward = 25
         self.hunger_lost_per_turn = 5
         self.hydration_lost_per_turn = 4
 
@@ -113,6 +113,10 @@ class Gridworld:
 
     def get_state(self):
         return self.pos[0], self.pos[1], self.health, self.hydration, self.inventory, self.turn, \
+               tuple(sorted(self.changes))
+
+    def get_q_table_state(self):
+        return self.pos[0], self.pos[1], int(self.health / 10), int(self.hydration / 10), self.inventory, self.turn, \
                tuple(sorted(self.changes))
 
     def _is_legal_pos(self, pos):
