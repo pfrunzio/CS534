@@ -73,6 +73,9 @@ class Gridworld:
         if level < 3:
             self.hasInventory = False
 
+        if self.hasHydration:
+            self.hydration_lost_per_turn = 0
+
         self.changes = []
 
     def pick_ml_action(self, output):
