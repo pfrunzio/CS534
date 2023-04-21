@@ -54,7 +54,7 @@ class Gridworld:
     def __init__(self, gridworld, pos, level):
         self.gridworld = gridworld
         self.pos = pos
-        self.level = level
+        self.level = int(level)
         self.is_terminal = False
 
         # Feel free to change these values
@@ -67,10 +67,12 @@ class Gridworld:
         self.hydration = 100
         self.inventory = Inventory.EMPTY
         self.turn = 1
-        
-        if level < 2:
+
+        self.hasHydration = True
+        self.hasInventory = True
+        if self.level < 2:
             self.hasHydration = False
-        if level < 3:
+        if self.level < 3:
             self.hasInventory = False
 
         if self.hasHydration:
@@ -171,7 +173,7 @@ class Gridworld:
         col = self.pos[1]
         tile = self.gridworld[row][col]
 
-        new_gridworld = Gridworld(deepcopy(self.gridworld), self.pos)
+        new_gridworld = Gridworld(deepcopy(self.gridworld), self.pos, self.level)
         new_gridworld.health = deepcopy(self.health)
         new_gridworld.hydration = deepcopy(self.hydration)
         new_gridworld.inventory = deepcopy(self.inventory)
@@ -231,7 +233,7 @@ class Gridworld:
         col = new_pos[1]
         tile = self.gridworld[row][col]
 
-        new_gridworld = Gridworld(deepcopy(self.gridworld), new_pos)
+        new_gridworld = Gridworld(deepcopy(self.gridworld), new_pos, self.level)
         new_gridworld.health = deepcopy(self.health)
         new_gridworld.hydration = deepcopy(self.hydration)
         new_gridworld.inventory = deepcopy(self.inventory)

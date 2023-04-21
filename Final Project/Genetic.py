@@ -15,7 +15,7 @@ class Genetic:
             self.actions.pop()
         
         self.population_size = 1000
-        self.num_generations = 100
+        self.num_generations = 25
         self.num_turns = 50
 
         self.mutation_rate = 0.2
@@ -23,7 +23,7 @@ class Genetic:
 
     def evaluate_genome(self, genome):
 
-        new_gridworld = Gridworld(deepcopy(self.gridworld), self.gridworld.pos)
+        new_gridworld = Gridworld(deepcopy(self.gridworld), self.gridworld.pos, self.gridworld.level)
 
         for action in genome:
 

@@ -1,4 +1,4 @@
-- - - F M F
-F M - - M - 
-M - - S - -
-W M - - W -
+-	-	-	F	M	F
+F	M	-	-	M	-
+M	-	-	S	-	-
+W	M	-	-	W	-
