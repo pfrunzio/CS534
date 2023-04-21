@@ -9,6 +9,12 @@ from copy import deepcopy
 class RL:
     def __init__(self, gridworld, runtime):
         self.gridworld = gridworld
+        
+        self.actions = list(Action)
+        
+        if gridworld.hasInventory == False:
+            self.actions.pop()
+            self.actions.pop()
 
         # run settings
         self.runtime = runtime
@@ -117,7 +123,7 @@ class RL:
         best_utility = -math.inf
         best_action = Action.UP
 
-        for action in Action:
+        for action in self.actions:
 
             current_utility = self._get_utility(state, action)
 
@@ -134,7 +140,7 @@ class RL:
             return 0
 
     def _explore(self):
-        return random.choice(list(Action))
+        return random.choice(self.actions)
 
     def _calc_mean_reward(self):
         trial_count = 0

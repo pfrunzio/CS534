@@ -7,8 +7,13 @@ from Gridworld import Gridworld, Action
 class Genetic:
     def __init__(self, gridworld):
         self.gridworld = gridworld
-
+                
         self.actions = list(Action)
+        
+        if gridworld.hasInventory == False:
+            self.actions.pop()
+            self.actions.pop()
+        
         self.population_size = 1000
         self.num_generations = 100
         self.num_turns = 50

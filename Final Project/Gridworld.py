@@ -51,9 +51,10 @@ def _tile_char(val):
 
 
 class Gridworld:
-    def __init__(self, gridworld, pos):
+    def __init__(self, gridworld, pos, level):
         self.gridworld = gridworld
         self.pos = pos
+        self.level = level
         self.is_terminal = False
 
         # Feel free to change these values
@@ -66,10 +67,16 @@ class Gridworld:
         self.hydration = 100
         self.inventory = Inventory.EMPTY
         self.turn = 1
+        
+        if level < 2:
+            self.hasHydration = False
+        if level < 3:
+            self.hasInventory = False
 
         self.changes = []
 
     def pick_ml_action(self, output):
+        # update to have levels
         actions_map = {0: Action.UP, 1: Action.DOWN, 2: Action.LEFT, 3: Action.RIGHT, 4: Action.USE_TILE,
                        5: Action.PICK_UP_ITEM, 6: Action.USE_INVENTORY}
 

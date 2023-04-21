@@ -18,18 +18,19 @@ Q_TABLE = "qtable"
 
 
 def main(argv):
-    command_format = f'\nCommands: [gridworld file] [{PLAYER_MODE}/{GENETIC_MODE}/{GENETIC_SLICE_MODE}]\n'
+    command_format = f'\nCommands: [gridworld file] [{PLAYER_MODE}/{GENETIC_MODE}/{GENETIC_SLICE_MODE}/{Q_TABLE}] [level 1-4]\n'
     print(command_format)
 
     argv = input("Enter arguments: ").split()
-    if len(argv) != 2:
+    if len(argv) != 3:
         print("Incorrect number of command line arguments")
         exit()
 
     file_name = argv[0]
     mode = argv[1]
+    level = argv[2]
 
-    gridworld = get_gridworld(file_name)
+    gridworld = get_gridworld(file_name, level)
 
     # Lets you play the game yourself, might be useful for debugging purposes
     if mode == PLAYER_MODE:
@@ -43,7 +44,7 @@ def main(argv):
 
 
 
-def get_gridworld(file_name):
+def get_gridworld(file_name, level):
     gridworld = None
 
     try:
@@ -67,7 +68,7 @@ def get_gridworld(file_name):
                 if isinstance(val, str) and val.isalpha():
                     board[row][col] = -1 * ord(val)
 
-        gridworld = Gridworld(board.astype(int), start)
+        gridworld = Gridworld(board.astype(int), start, level)
     except Exception as e:
         print("Exception while generating gridworld from file, ", e.__str__())
 
