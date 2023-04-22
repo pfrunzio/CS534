@@ -61,7 +61,7 @@ class Gridworld:
         self.food_reward = 25
         self.hydration_reward = 25
         self.hunger_lost_per_turn = 5
-        self.hydration_lost_per_turn = 4
+        self.hydration_lost_per_turn = 0
 
         self.health = 100
         self.hydration = 100
@@ -76,7 +76,7 @@ class Gridworld:
             self.hasInventory = False
 
         if self.hasHydration:
-            self.hydration_lost_per_turn = 0
+            self.hydration_lost_per_turn = 4
 
         self.changes = []
 

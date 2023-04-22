@@ -15,7 +15,7 @@ class GeneticSlice:
             self.actions.pop()
         
         self.population_size = 1000
-        self.num_generations = 25
+        self.num_generations = 100
 
         self.max_moves = 50
         self.move_increase_frequency = 10
