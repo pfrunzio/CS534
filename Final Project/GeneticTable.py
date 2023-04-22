@@ -22,8 +22,8 @@ class GeneticTable:
         self.population_size = 1000
         self.num_generations = 100
 
-        self.mutation_rate = 0.1
-        self.num_parents = 25
+        self.mutation_rate = 0.3
+        self.num_parents = 15
         self.num_of_tables =2
 
     def evaluate_genome(self, genome):
@@ -133,7 +133,7 @@ class GeneticTable:
             overall_best_genome = self.copy_genome(best_genome)
 
         best_genome_fitness_scores = ([self.evaluate_genome(self.copy_genome(overall_best_genome)) for _ in
-                       range(len(self.population_size))])
+                       range(self.population_size)])
 
         print(f"Best overall genome: {self.copy_genome(overall_best_genome)}, average fitness = {sum(best_genome_fitness_scores)/len(best_genome_fitness_scores)}")
         print(f"Best genome of Final Generation: {self.copy_genome(best_genome)}, fitness = {self.evaluate_genome(self.copy_genome(best_genome))}")

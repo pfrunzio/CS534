@@ -128,7 +128,7 @@ class GeneticSequenceTable:
             overall_best_genome = self.copy_genome(best_genome)
 
         best_genome_fitness_scores = ([self.evaluate_genome(self.copy_genome(overall_best_genome)) for _ in
-                                        range(len(self.population_size))])
+                                        range(self.population_size)])
 
         print(
             f"Best overall genome: {self.copy_genome(overall_best_genome)}, average fitness = {sum(best_genome_fitness_scores) / len(best_genome_fitness_scores)}")
