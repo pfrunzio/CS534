@@ -33,6 +33,19 @@ class Genetic:
             new_gridworld = new_gridworld.take_action(action)
 
         return round(new_gridworld.health / new_gridworld.hunger_lost_per_turn) + new_gridworld.turn
+    
+    def return_turns(self, genome):
+
+        new_gridworld = Gridworld(deepcopy(self.gridworld), self.gridworld.pos, self.gridworld.level)
+
+        for action in genome:
+
+            if new_gridworld.is_terminal:
+                return new_gridworld.turn
+
+            new_gridworld = new_gridworld.take_action(action)
+
+        return new_gridworld.turn
 
     def run(self):
 
@@ -70,4 +83,5 @@ class Genetic:
         # Output the best genome found by the genetic algorithm
         best_genome = max(population, key=self.evaluate_genome)
         print(f"Best genome: {best_genome}, fitness = {self.evaluate_genome(best_genome)}")
+        print(f"Number of runs: {self.evaluate_genome(best_genome)}")
 
