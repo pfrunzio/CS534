@@ -1,0 +1,4 @@
+F	-	-	F	M	F
+F	M	-	-	M	-
+M	-	-	S	-	F
+-	F	F	-	M	F

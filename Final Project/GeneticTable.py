@@ -24,7 +24,7 @@ class GeneticTable:
 
         self.mutation_rate = 0.3
         self.num_parents = 15
-        self.num_of_tables =2
+        self.num_of_tables = 2
 
     def evaluate_genome(self, genome):
 
@@ -36,7 +36,7 @@ class GeneticTable:
             if action == Action.USE_INVENTORY or action == Action.USE_TILE or action == Action.PICK_UP_ITEM:
                 genome[0][new_gridworld.pos[0]][new_gridworld.pos[1]] = genome[2][new_gridworld.pos[0]][new_gridworld.pos[1]]
             new_gridworld = new_gridworld.take_action(action)
-        return new_gridworld.turn
+        return round(new_gridworld.health / new_gridworld.hunger_lost_per_turn) + new_gridworld.turn
 
     def copy_genome(self, genome):
         if genome is None:

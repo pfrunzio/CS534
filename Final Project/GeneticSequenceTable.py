@@ -45,7 +45,7 @@ class GeneticSequenceTable:
             new_gridworld = new_gridworld.take_action(action)
             if not genome[0][new_gridworld.pos[0]][new_gridworld.pos[1]]:
                 genome[0][new_gridworld.pos[0]][new_gridworld.pos[1]] = copy.deepcopy(genome[1][new_gridworld.pos[0]][new_gridworld.pos[1]])
-        return new_gridworld.turn
+        return round(new_gridworld.health / new_gridworld.hunger_lost_per_turn) + new_gridworld.turn
 
     def run(self):
         population = []
