@@ -32,6 +32,7 @@ class GeneticTable:
         if genome is None:
             return 0
         while not new_gridworld.is_terminal:
+            print(new_gridworld.gridworld.gridworld)
             action = genome[0][new_gridworld.pos[0]][new_gridworld.pos[1]]
             if action == Action.USE_INVENTORY or action == Action.USE_TILE or action == Action.PICK_UP_ITEM:
                 genome[0][new_gridworld.pos[0]][new_gridworld.pos[1]] = genome[2][new_gridworld.pos[0]][new_gridworld.pos[1]]

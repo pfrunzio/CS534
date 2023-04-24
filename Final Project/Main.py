@@ -3,6 +3,7 @@ import numpy as np
 import sys
 
 from Genetic import Genetic
+from GeneticDecision import GeneticDecision
 from GeneticSequenceTable import GeneticSequenceTable
 from GeneticSlice import GeneticSlice
 from GeneticTable import GeneticTable
@@ -20,9 +21,10 @@ Q_TABLE = "qtable"
 
 GENETIC_TABLE_MODE = "tgenetic"
 GENETIC_SEQUENCE_TABLE_MODE = "stgenetic"
+GENETIC_DECISION = "dgenetic"
 
 def main(argv):
-    command_format = f'\nCommands: [gridworld file] [{PLAYER_MODE}/{GENETIC_MODE}/{GENETIC_SLICE_MODE}/{Q_TABLE}/{GENETIC_TABLE_MODE}/{GENETIC_SEQUENCE_TABLE_MODE}] [level 1-4]\n'
+    command_format = f'\nCommands: [gridworld file] [{PLAYER_MODE}/{GENETIC_MODE}/{GENETIC_SLICE_MODE}/{Q_TABLE}/{GENETIC_TABLE_MODE}/{GENETIC_SEQUENCE_TABLE_MODE}/{GENETIC_DECISION}] [level 1-4]\n'
     print(command_format)
 
     argv = input("Enter arguments: ").split()
@@ -49,6 +51,8 @@ def main(argv):
         GeneticTable(gridworld).run()
     elif mode == GENETIC_SEQUENCE_TABLE_MODE:
         GeneticSequenceTable(gridworld).run()
+    elif mode == GENETIC_DECISION:
+        GeneticDecision(gridworld).run()
 
 
 
