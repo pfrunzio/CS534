@@ -23,10 +23,11 @@ class GeneticDecision:
         self.movement_actions = [Action.UP, Action.DOWN, Action.LEFT, Action.RIGHT]
         self.population_size = 1000
         self.num_generations = 100
-        self.num_of_conditions = 100
-        self.child_mutation_rate = 0.2
+        self.num_of_conditions = 7
+        self.child_mutation_rate = 0.1
         self.gene_mutation_rate = 0.1
-        self.num_parents = 4
+        self.num_parents = round(self.population_size/10)
+        self.num_keep_parents = round(self.num_parents/10)
         self.number_of_conditions = 5
         self.number_of_actions = 5
         self.num_turns = 50

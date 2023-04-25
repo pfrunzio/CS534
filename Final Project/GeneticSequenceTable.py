@@ -18,11 +18,12 @@ class GeneticSequenceTable:
 
         self.actions = list(Action)
         self.population_size = 1000
-        self.num_generations = 100
-        self.num_move_per_square = 5
+        self.num_generations = 25
+        self.num_move_per_square = 3
 
-        self.mutation_rate = 0.5
-        self.num_parents = 20
+        self.mutation_rate = 0.01
+        self.num_parents = round(self.population_size/10)
+        self.num_keep_parents = round(self.num_parents/10)
         self.num_of_tables =2
 
     def copy_genome(self, genome):
@@ -64,7 +65,7 @@ class GeneticSequenceTable:
             copy_table = copy.deepcopy(table)
             list_of_table.append(copy_table)
             population.append(list_of_table)
-        print(population[0][0][0][0][0])
+
         # Iterate over the specified number of generations
         for generation in range(self.num_generations):
             # Evaluate the fitness of each genome
@@ -87,7 +88,7 @@ class GeneticSequenceTable:
             # Create a new population of genomes through crossover and mutation
             new_population = []
 
-            for i in range(len(parents)):
+            for i in range(self.num_keep_parents):
                 new_population.append(self.copy_genome(parents[i]))
 
             while len(new_population) < self.population_size-self.num_parents:
@@ -103,25 +104,16 @@ class GeneticSequenceTable:
                             col.append(copy.deepcopy(parent1[1][r][c][_]) if random.random() < 0.5 else copy.deepcopy(parent2[1][r][c][_]))
                         row.append(col)
                     table.append(row)
-                if len(new_population) < self.population_size/3:
-                    for r in range(len(self.gridworld.gridworld)):
-                        for c in range(len(self.gridworld.gridworld[r])):
-                            for _ in range(self.num_move_per_square):
-                                if random.random() < self.mutation_rate:
-                                    table[r][c][_] = random.choice(self.actions)
+                for a in range(len(self.gridworld.gridworld)):
+                    for b in range(len(self.gridworld.gridworld[a])):
+                        for d in range(self.num_move_per_square):
+                            if random.random() < self.mutation_rate:
+                                table[a][b][d] = random.choice(self.actions)
                 child.append(table)
                 table_copy = copy.deepcopy(table)
                 child.append(table_copy)
                 new_population.append(child)
-
-        # Replace the old population with the new one
-        population = new_population
-
-        # Print some information about the current generation
-        print(
-           f"Generation {generation}: max fitness = {max(fitness_scores)}, avg fitness = {sum(fitness_scores) / len(fitness_scores)}")
-        # Output the best genome found by the genetic algorithm
-        best_genome = max(population, key=self.evaluate_genome)
+            population = new_population
 
         if self.evaluate_genome(self.copy_genome(best_genome)) >= self.evaluate_genome(
                 self.copy_genome(overall_best_genome)):

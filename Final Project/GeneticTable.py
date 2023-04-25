@@ -21,10 +21,11 @@ class GeneticTable:
         self.actions = list(Action)
         self.movement_actions = [Action.UP, Action.DOWN, Action.LEFT, Action.RIGHT]
         self.population_size = 1000
-        self.num_generations = 100
+        self.num_generations = 25
 
-        self.mutation_rate = 0.3
-        self.num_parents = 15
+        self.mutation_rate = 0.05
+        self.num_parents = round(self.population_size/10)
+        self.num_keep_parents = round(self.num_parents/10)
         self.num_of_tables = 2
         
         self.runtime = runtime
@@ -35,7 +36,7 @@ class GeneticTable:
         if genome is None:
             return 0
         while not new_gridworld.is_terminal:
-            print(new_gridworld.gridworld.gridworld)
+            #print(new_gridworld.gridworld.gridworld)
             action = genome[0][new_gridworld.pos[0]][new_gridworld.pos[1]]
             if action == Action.USE_INVENTORY or action == Action.USE_TILE or action == Action.PICK_UP_ITEM:
                 genome[0][new_gridworld.pos[0]][new_gridworld.pos[1]] = genome[2][new_gridworld.pos[0]][new_gridworld.pos[1]]
@@ -100,7 +101,7 @@ class GeneticTable:
             # Create a new population of genomes through crossover and mutation
             new_population = []
 
-            for i in range(len(parents)):
+            for i in range(self.num_keep_parents):
                 new_population.append(self.copy_genome(parents[i]))
 
             while len(new_population) < self.population_size-self.num_parents:
