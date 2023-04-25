@@ -24,19 +24,20 @@ class GeneticTable:
         self.num_generations = 25
 
         self.mutation_rate = 0.05
-        self.num_parents = round(self.population_size/10)
-        self.num_keep_parents = round(self.num_parents/10)
+
+        self.num_parents = round(self.population_size / 10)
+        self.num_keep_parents = round(self.num_parents / 10)
+
         self.num_of_tables = 2
         
         self.runtime = runtime
-
+        self.graph_data = [[], [], [], []]
     def evaluate_genome(self, genome):
 
         new_gridworld = Gridworld(deepcopy(self.gridworld), self.gridworld.pos, self.gridworld.level)
         if genome is None:
             return 0
         while not new_gridworld.is_terminal:
-            #print(new_gridworld.gridworld.gridworld)
             action = genome[0][new_gridworld.pos[0]][new_gridworld.pos[1]]
             if action == Action.USE_INVENTORY or action == Action.USE_TILE or action == Action.PICK_UP_ITEM:
                 genome[0][new_gridworld.pos[0]][new_gridworld.pos[1]] = genome[2][new_gridworld.pos[0]][new_gridworld.pos[1]]
@@ -74,12 +75,10 @@ class GeneticTable:
 
         start_time = time.time()
         end_time = start_time + self.runtime
-        self.end_time = end_time
         
         generation = 1
 
-        # while time.time() < end_time:
-        for generation in range(self.num_generations):
+        while generation < self.num_generations and time.time() < end_time:
             # Evaluate the fitness of each genome
             fitness_scores = [self.evaluate_genome(self.copy_genome(genome)) for genome in population]
 
@@ -87,6 +86,13 @@ class GeneticTable:
             print(
                 f"Generation {generation}: max fitness = {max(fitness_scores)}, avg fitness = {sum(fitness_scores) / len(fitness_scores)}, , time = {time.time()-start_time}")
             # Output the best genome found by the genetic algorithm
+            generation_data = [generation, max(fitness_scores), sum(fitness_scores) / len(fitness_scores),
+                               time.time() - start_time]
+            self.graph_data[0].append(generation_data[0])
+            self.graph_data[1].append(generation_data[1])
+            self.graph_data[2].append(generation_data[2])
+            self.graph_data[3].append(generation_data[3])
+
             best_genome = self.copy_genome(population[fitness_scores.index(max(fitness_scores))])
 
             if self.evaluate_genome(self.copy_genome(best_genome)) >= self.evaluate_genome(
@@ -104,7 +110,7 @@ class GeneticTable:
             for i in range(self.num_keep_parents):
                 new_population.append(self.copy_genome(parents[i]))
 
-            while len(new_population) < self.population_size-self.num_parents:
+            while len(new_population) < self.population_size:
                 parent1 = random.choice(parents)
                 parent2 = random.choice(parents)
                 child = []
@@ -139,6 +145,13 @@ class GeneticTable:
         # Print some information about the current generation
         print( f"Generation {generation}: max fitness = {max(fitness_scores)}, avg fitness = {sum(fitness_scores) / len(fitness_scores)}")
         # Output the best genome found by the genetic algorithm
+        generation_data = [generation, max(fitness_scores), sum(fitness_scores) / len(fitness_scores),
+                           time.time() - start_time]
+        self.graph_data[0].append(generation_data[0])
+        self.graph_data[1].append(generation_data[1])
+        self.graph_data[2].append(generation_data[2])
+        self.graph_data[3].append(generation_data[3])
+
         best_genome = max(population, key=self.evaluate_genome)
 
         if self.evaluate_genome(self.copy_genome(best_genome)) >= self.evaluate_genome(self.copy_genome(overall_best_genome)):
@@ -149,4 +162,5 @@ class GeneticTable:
 
         print(f"Best overall genome: {self.copy_genome(overall_best_genome)}, average fitness = {sum(best_genome_fitness_scores)/len(best_genome_fitness_scores)}")
         print(f"Best genome of Final Generation: {self.copy_genome(best_genome)}, fitness = {self.evaluate_genome(self.copy_genome(best_genome))}")
+        return self.graph_data
 

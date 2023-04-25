@@ -20,9 +20,13 @@ class Genetic:
         self.num_turns = 50
 
         self.mutation_rate = 0.2
-        self.num_parents = 25
+
+        self.num_parents = round(self.population_size / 10)
+        self.num_keep_parents = round(self.num_parents / 10)
         
         self.runtime = runtime
+
+        self.graph_data = [[], [], [], []]
 
     def evaluate_genome(self, genome):
 
@@ -63,9 +67,11 @@ class Genetic:
 
             # Create a new population of genomes through crossover and mutation
             new_population = []
+
+            for i in range(self.num_keep_parents):
+                new_population.append(parents[i])
+
             while len(new_population) < self.population_size:
-                
-                new_population.append(parents[0])
 
                 parent1 = random.choice(parents[:500])
                 parent2 = random.choice(parents[:500])
@@ -78,6 +84,12 @@ class Genetic:
             # Replace the old population with the new one
             population = new_population
             # Print some information about the current generation
+
+            generation_data = [generation, max(fitness_scores), sum(fitness_scores) / len(fitness_scores), time.time()-start_time]
+            self.graph_data[0].append(generation_data[0])
+            self.graph_data[1].append(generation_data[1])
+            self.graph_data[2].append(generation_data[2])
+            self.graph_data[3].append(generation_data[3])
             print(
                 f"Generation {generation}: max fitness = {max(fitness_scores)}, avg fitness = {sum(fitness_scores) / len(fitness_scores)}, time = {time.time()-start_time}")
             generation += 1
@@ -85,4 +97,5 @@ class Genetic:
         # Output the best genome found by the genetic algorithm
         best_genome = max(population, key=self.evaluate_genome)
         print(f"Best genome: {best_genome}, fitness = {self.evaluate_genome(best_genome)}")
+        return self.graph_data
 
