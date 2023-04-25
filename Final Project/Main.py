@@ -38,17 +38,20 @@ def main(argv):
 
     gridworld = get_gridworld(file_name, level)
 
+
+    time = 100
+    
     # Lets you play the game yourself, might be useful for debugging purposes
     if mode == PLAYER_MODE:
         _run_player_mode(gridworld)
     elif mode == GENETIC_MODE:
-        Genetic(gridworld).run()
+        Genetic(gridworld, time).run()
     elif mode == GENETIC_SLICE_MODE:
-        GeneticSlice(gridworld).run()
+        GeneticSlice(gridworld, time).run()
     elif mode == Q_TABLE:
-        RL(gridworld, 50).start()
+        RL(gridworld, time).start()
     elif mode == GENETIC_TABLE_MODE:
-        GeneticTable(gridworld).run()
+        GeneticTable(gridworld, time).run()
     elif mode == GENETIC_SEQUENCE_TABLE_MODE:
         GeneticSequenceTable(gridworld).run()
     elif mode == GENETIC_DECISION:

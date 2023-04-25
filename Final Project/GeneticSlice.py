@@ -1,11 +1,12 @@
 import random
 from copy import deepcopy
+import time
 
 from Gridworld import Gridworld, Action
 
 
 class GeneticSlice:
-    def __init__(self, gridworld):
+    def __init__(self, gridworld, runtime):
         self.gridworld = gridworld
 
         self.actions = list(Action)
@@ -23,6 +24,8 @@ class GeneticSlice:
 
         self.mutation_rate = 0.2
         self.num_parents = 25
+        
+        self.runtime = runtime
 
     def evaluate_genome(self, genome):
 
@@ -38,6 +41,13 @@ class GeneticSlice:
         return round(new_gridworld.health / new_gridworld.hunger_lost_per_turn) + new_gridworld.turn
 
     def run(self):
+        
+        print(
+            f'Performing Genetic in {self.runtime} seconds\n')
+        
+        start_time = time.time()
+        end_time = start_time + self.runtime
+        self.end_time = end_time
 
         # Create a random population of genomes
         num_moves = 0
@@ -45,7 +55,9 @@ class GeneticSlice:
 
         overall_best_genome = []
         # Iterate over the specified number of generations
-        for generation in range(self.num_generations):
+        generation = 0
+
+        while time.time() < end_time:
 
             if generation % self.move_increase_frequency == 0:
 
@@ -84,8 +96,9 @@ class GeneticSlice:
             population = new_population
             # Print some information about the current generation
             print(
-                f"Generation {generation}: max fitness = {max(fitness_scores)}, avg fitness = {sum(fitness_scores) / len(fitness_scores)}")
-
+                f"Generation {generation}: max fitness = {max(fitness_scores)}, avg fitness = {sum(fitness_scores) / len(fitness_scores)}, time = {time.time()-start_time}")
+            generation += 1
+            
         # Output the best genome found by the genetic algorithm
         best_genome = max(population, key=self.evaluate_genome)
 

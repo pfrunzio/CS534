@@ -3,6 +3,7 @@ import random
 from copy import deepcopy
 from enum import Enum
 from Gridworld import Gridworld, Action
+import time
 
 
 def print_geneome(genome):
@@ -14,7 +15,7 @@ def print_geneome(genome):
 
 
 class GeneticTable:
-    def __init__(self, gridworld):
+    def __init__(self, gridworld, runtime):
         self.gridworld = gridworld
 
         self.actions = list(Action)
@@ -25,6 +26,8 @@ class GeneticTable:
         self.mutation_rate = 0.3
         self.num_parents = 15
         self.num_of_tables = 2
+        
+        self.runtime = runtime
 
     def evaluate_genome(self, genome):
 
@@ -68,14 +71,20 @@ class GeneticTable:
             list_of_table.append(table_two)
             population.append(list_of_table)
 
-        # Iterate over the specified number of generations
+        start_time = time.time()
+        end_time = start_time + self.runtime
+        self.end_time = end_time
+        
+        generation = 1
+
+        # while time.time() < end_time:
         for generation in range(self.num_generations):
             # Evaluate the fitness of each genome
             fitness_scores = [self.evaluate_genome(self.copy_genome(genome)) for genome in population]
 
             # Print some information about the current generation
             print(
-                f"Generation {generation}: max fitness = {max(fitness_scores)}, avg fitness = {sum(fitness_scores) / len(fitness_scores)}")
+                f"Generation {generation}: max fitness = {max(fitness_scores)}, avg fitness = {sum(fitness_scores) / len(fitness_scores)}, , time = {time.time()-start_time}")
             # Output the best genome found by the genetic algorithm
             best_genome = self.copy_genome(population[fitness_scores.index(max(fitness_scores))])
 
@@ -124,6 +133,7 @@ class GeneticTable:
 
             # Replace the old population with the new one
             population = new_population
+            generation += 1
 
         # Print some information about the current generation
         print( f"Generation {generation}: max fitness = {max(fitness_scores)}, avg fitness = {sum(fitness_scores) / len(fitness_scores)}")
