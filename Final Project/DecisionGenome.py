@@ -87,8 +87,11 @@ class DecisionGenome:
     def get_direction_to_nearest_food(self, gridworld):
         path = self.search_for(gridworld, TileValue.FOOD)
         if path:
-            if gridworld.health - (len(path)*gridworld.hunger_lost_per_turn) > self.eat_threshold and gridworld.inventory == Inventory.EMPTY:
-                path.append(Action.PICK_UP_ITEM)
+            if gridworld.health - (len(path) * gridworld.hunger_lost_per_turn) > self.eat_threshold:
+                if gridworld.inventory == Inventory.EMPTY:
+                    path.append(Action.PICK_UP_ITEM)
+                else:
+                    return None
             else:
                 path.append(Action.USE_TILE)
         return path
@@ -100,8 +103,11 @@ class DecisionGenome:
         path = self.search_for(gridworld, TileValue.BOAR)
         if path:
             path.append(path[len(path) - 1])
-            if gridworld.health - (len(path)*gridworld.hunger_lost_per_turn) > self.eat_threshold and gridworld.inventory == Inventory.EMPTY:
-                path.append(Action.PICK_UP_ITEM)
+            if gridworld.health - (len(path)*gridworld.hunger_lost_per_turn) > self.eat_threshold:
+                if gridworld.inventory == Inventory.EMPTY:
+                    path.append(Action.PICK_UP_ITEM)
+                else:
+                    return None
             else:
                 path.append(Action.USE_TILE)
         return path
@@ -109,9 +115,11 @@ class DecisionGenome:
     def get_direction_to_nearest_killed_boar(self, gridworld):
         path = self.search_for(gridworld, TileValue.KILLED_BOAR)
         if path:
-            if gridworld.health - (
-                    len(path) * gridworld.hunger_lost_per_turn) > self.eat_threshold and gridworld.inventory == Inventory.EMPTY:
-                path.append(Action.PICK_UP_ITEM)
+            if gridworld.health - (len(path) * gridworld.hunger_lost_per_turn) > self.eat_threshold:
+                if gridworld.inventory == Inventory.EMPTY:
+                    path.append(Action.PICK_UP_ITEM)
+                else:
+                    return None
             else:
                 path.append(Action.USE_TILE)
         return path
