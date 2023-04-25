@@ -10,22 +10,26 @@ class GeneticSlice:
         self.gridworld = gridworld
 
         self.actions = list(Action)
-        
+
         if gridworld.hasInventory == False:
             self.actions.pop()
             self.actions.pop()
-        
+
         self.population_size = 1000
         self.num_generations = 100
 
         self.max_moves = 50
-        self.move_increase_frequency = 10
+        self.move_increase_frequency = 5
         self.move_increase = 5
 
         self.mutation_rate = 0.2
-        self.num_parents = 25
-        
+
+        self.num_parents = round(self.population_size / 10)
+        self.num_keep_parents = round(self.num_parents / 10)
+
         self.runtime = runtime
+
+        self.graph_data = [[], [], [], []]
 
     def evaluate_genome(self, genome):
 
@@ -41,13 +45,12 @@ class GeneticSlice:
         return round(new_gridworld.health / new_gridworld.hunger_lost_per_turn) + new_gridworld.turn
 
     def run(self):
-        
+
         print(
             f'Performing Genetic in {self.runtime} seconds\n')
-        
+
         start_time = time.time()
         end_time = start_time + self.runtime
-        self.end_time = end_time
 
         # Create a random population of genomes
         num_moves = 0
@@ -82,6 +85,11 @@ class GeneticSlice:
             # Create a new population of genomes through crossover and mutation
             new_population = []
 
+            for i in range(self.num_keep_parents):
+                new_population.append(parents[i])
+
+            print(len(new_population))
+
             while len(new_population) < self.population_size:
 
                 parent1 = random.choice(parents)
@@ -94,11 +102,19 @@ class GeneticSlice:
 
             # Replace the old population with the new one
             population = new_population
+
+            generation_data = [generation, max(fitness_scores), sum(fitness_scores) / len(fitness_scores),
+                               time.time() - start_time]
+            self.graph_data[0].append(generation_data[0])
+            self.graph_data[1].append(generation_data[1])
+            self.graph_data[2].append(generation_data[2])
+            self.graph_data[3].append(generation_data[3])
+
             # Print some information about the current generation
             print(
-                f"Generation {generation}: max fitness = {max(fitness_scores)}, avg fitness = {sum(fitness_scores) / len(fitness_scores)}, time = {time.time()-start_time}")
+                f"Generation {generation}: max fitness = {max(fitness_scores)}, avg fitness = {sum(fitness_scores) / len(fitness_scores)}, time = {time.time() - start_time}")
             generation += 1
-            
+
         # Output the best genome found by the genetic algorithm
         best_genome = max(population, key=self.evaluate_genome)
 
@@ -107,3 +123,4 @@ class GeneticSlice:
 
         print(f"Best overall genome: {overall_best_genome}, fitness = {self.evaluate_genome(overall_best_genome)}")
         print(f"Best genome of Final Generation: {best_genome}, fitness = {self.evaluate_genome(best_genome)}")
+        return self.graph_data
