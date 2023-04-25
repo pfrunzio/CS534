@@ -6,7 +6,6 @@ from Gridworld import Gridworld, Action
 
 
 def print_geneome(genome):
-    string = ""
     for t in range(len(genome)):
         for r in range(len(genome[t])):
             print(genome[t][r])

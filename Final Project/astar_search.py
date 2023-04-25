@@ -60,5 +60,15 @@ def heuristic(cell, goal):
 
 def get_move(prev, current):
     # Get the Action enum representing the move from the previous cell to the current cell
-    move = (current[0] - prev[0], current[1] - prev[1])
-    return Action(move[0], move[1])
+    value = (current[0] - prev[0], current[1] - prev[1])
+    if(value == Action.UP.value):
+        return Action.UP
+    elif(value == Action.DOWN.value):
+        return Action.DOWN
+    elif (value == Action.LEFT.value):
+        return Action.LEFT
+    elif (value == Action.RIGHT.value):
+        return Action.RIGHT
+    else:
+        return None
+
