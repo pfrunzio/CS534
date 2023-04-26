@@ -12,19 +12,23 @@ from Gridworld import TileValue
 from scipy.interpolate import interp1d
 from RL import RL
 
-from Gridworld import Action
-
-
 def main():
-    graph('Level1.txt', 1, 20)
+    #theoretical max = 30
+    # graph('Level1.txt', 1, 30, 50)
 
+    #theoretic max = 60
+    # graph('lotsoffood.txt', 1, 100, 80)
+    # theoretic max = 30
+    # graph('Level2-2.txt', 2, 30, 50)
+    # theoretic max = 30
+    graph('Level3-2.txt', 3, 120, 50)
 
-def graph(file_name, level, time):
+def graph(file_name, level, time, num_moves):
     gridworld = get_gridworld(file_name, level)
 
-    g_data = Genetic(gridworld, time).run()
+    g_data = Genetic(gridworld, time, num_moves).run()
 
-    sg_data = GeneticSlice(gridworld, time).run()
+    sg_data = GeneticSlice(gridworld, time, num_moves).run()
     # sg_data = []
 
     qt_data = RL(gridworld, time).start()
@@ -33,8 +37,8 @@ def graph(file_name, level, time):
     tg_data = GeneticTable(gridworld, time).run()
     # tg_data = []
 
-    # stg_data = data.append(GeneticSequenceTable(gridworld).run())
-    stg_data = []
+    stg_data = GeneticSequenceTable(gridworld, time).run()
+    # stg_data = []
 
     # dg_data = GeneticDecision(gridworld).run()
     dg_data = []
@@ -50,17 +54,17 @@ def graph_comparison(g_data, sg_data, qt_data, tg_data, stg_data, dg_data, total
     average_score_index = 2
     time_index = 3
 
-    graph_helper(g_data, sg_data, qt_data, tg_data, stg_data, dg_data, max_score_index, time_index, total_time, False, title)
-    graph_helper(g_data, sg_data, qt_data, tg_data, stg_data, dg_data, max_score_index, time_index, total_time, True, title)
-    # graph_helper(g_data, sg_data, qt_data, tg_data, stg_data, average_score_index, time_index, total_time)
+    # graph_helper(g_data, sg_data, qt_data, tg_data, stg_data, dg_data, max_score_index, time_index, total_time, False, "Max Turns on " + title)
+    graph_helper(g_data, sg_data, qt_data, tg_data, stg_data, dg_data, max_score_index, time_index, total_time, True, "Max Turns on " + title)
+    graph_helper(g_data, sg_data, qt_data, tg_data, stg_data, dg_data, average_score_index, time_index, total_time, True, "Average Turns on " + title)
 
 
 def graph_helper(g_data, sg_data, qt_data, tg_data, stg_data, dg_data, y_index, x_index, total_time, interpolate, title):
+
     graph_data_helper(g_data, y_index, x_index, total_time, 'Genetic', interpolate)
     graph_data_helper(sg_data, y_index, x_index, total_time, 'Genetic-Slice', interpolate)
-    graph_data_helper(qt_data, 1, 0, total_time, 'Q-Table', interpolate)
+    graph_data_helper(qt_data, y_index, 0, total_time, 'Q-Table', interpolate)
     graph_data_helper(tg_data, y_index, x_index, total_time, 'Genetic-Table', interpolate)
-    graph_data_helper(stg_data, y_index, x_index, total_time, 'Genetic-Sequence-Table', interpolate)
     graph_data_helper(stg_data, y_index, x_index, total_time, 'Genetic-Sequence-Table', interpolate)
     graph_data_helper(dg_data, y_index, x_index, total_time, 'Genetic-Decision', interpolate)
 

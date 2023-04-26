@@ -23,7 +23,7 @@ class RL:
 
         self.q_table = dict()
 
-        self.mean_rewards = [[],[]]
+        self.mean_rewards = [[], [], []]
 
     def start(self):
         print(
@@ -31,7 +31,7 @@ class RL:
         print("Initial World:")
         print(self.gridworld, '\n')
 
-        random.seed(21)
+        # random.seed(21)
 
         # start learning
         return self._rl()
@@ -43,8 +43,8 @@ class RL:
         end_time = start_time + self.runtime
         self.end_time = end_time
 
+        reward_count = 0
         count_episodes = 0
-        total_episodes = 0
 
         while time.time() < end_time:
 
@@ -55,12 +55,13 @@ class RL:
             action = self._select_action(current_state, epsilon)
 
             # calculate graph data
-            if count_episodes % 100 == 0:
+            if count_episodes % 100 == 0 and count_episodes != 0:
                 new_time = time.time() - start_time
 
                 time_diff, mean_reward = self._calc_mean_reward_graph()
                 self.mean_rewards[0].append(new_time)
                 self.mean_rewards[1].append(mean_reward)
+                self.mean_rewards[2].append(reward_count/count_episodes)
                 # account for time spent calculating mean
                 start_time += time_diff
                 end_time += time_diff
@@ -80,6 +81,8 @@ class RL:
 
                 current_state = new_state
                 action = new_action
+
+                reward_count += reward
 
             # exploration
             percent_used = 1 - (end_time - time.time()) / self.runtime

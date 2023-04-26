@@ -66,7 +66,7 @@ class Gridworld:
         self.health = 100
         self.hydration = 100
         self.inventory = Inventory.EMPTY
-        self.turn = 1
+        self.turn = 0
 
         self.hasHydration = True
         self.hasInventory = True
@@ -76,7 +76,7 @@ class Gridworld:
             self.hasInventory = False
 
         if self.hasHydration:
-            self.hydration_lost_per_turn = 4
+            self.hydration_lost_per_turn = 5
 
         self.changes = []
 

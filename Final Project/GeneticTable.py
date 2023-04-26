@@ -19,9 +19,14 @@ class GeneticTable:
         self.gridworld = gridworld
 
         self.actions = list(Action)
+
+        if gridworld.hasInventory == False:
+            self.actions.pop()
+            self.actions.pop()
+
         self.movement_actions = [Action.UP, Action.DOWN, Action.LEFT, Action.RIGHT]
         self.population_size = 1000
-        self.num_generations = 25
+        self.num_generations = 100
 
         self.mutation_rate = 0.05
 

@@ -6,7 +6,7 @@ from Gridworld import Gridworld, Action
 
 
 class Genetic:
-    def __init__(self, gridworld, runtime):
+    def __init__(self, gridworld, runtime, num_moves):
         self.gridworld = gridworld
                 
         self.actions = list(Action)
@@ -17,9 +17,9 @@ class Genetic:
         
         self.population_size = 1000
         self.num_generations = 100
-        self.num_turns = 50
+        self.num_turns = num_moves
 
-        self.mutation_rate = 0.2
+        self.mutation_rate = 0.05
 
         self.num_parents = round(self.population_size / 10)
         self.num_keep_parents = round(self.num_parents / 10)

@@ -6,7 +6,7 @@ from Gridworld import Gridworld, Action
 
 
 class GeneticSlice:
-    def __init__(self, gridworld, runtime):
+    def __init__(self, gridworld, runtime, max_moves):
         self.gridworld = gridworld
 
         self.actions = list(Action)
@@ -18,11 +18,11 @@ class GeneticSlice:
         self.population_size = 1000
         self.num_generations = 100
 
-        self.max_moves = 50
+        self.max_moves = max_moves
         self.move_increase_frequency = 5
         self.move_increase = 5
 
-        self.mutation_rate = 0.2
+        self.mutation_rate = 0.05
 
         self.num_parents = round(self.population_size / 10)
         self.num_keep_parents = round(self.num_parents / 10)
